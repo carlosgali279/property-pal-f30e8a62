@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AlertTriangle, Building2, Search, TrendingUp, Wallet } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
@@ -65,7 +65,7 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
             {isAdmin ? "Administración del portafolio" : `Vista de propietario · ${viewerLabel}`}
@@ -79,7 +79,7 @@ function Dashboard() {
         {isAdmin && <NuevoPredioDialog />}
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={<Building2 className="size-4" />} label="Predios" value={String(visiblePredios.length)} />
         <Kpi
           icon={<AlertTriangle className="size-4" />}
@@ -92,18 +92,20 @@ function Dashboard() {
       </div>
 
       {alertasCount > 0 && (
-        <Card className="mt-4 flex flex-wrap items-center gap-3 border-warning/40 bg-warning/10 p-4">
-          <AlertTriangle className="size-4 text-warning-foreground" />
-          <p className="text-sm">
+        <Card className="rise-in mt-5 flex flex-wrap items-center gap-4 rounded-2xl border-warning/40 bg-warning/10 p-4 shadow-none">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-warning/30 text-warning-foreground">
+            <AlertTriangle className="size-4" />
+          </span>
+          <p className="text-sm text-warning-foreground">
             <span className="font-semibold">{alertasCount} contrato(s)</span> con vencimiento en los próximos 30 días.
           </p>
           <Button asChild size="sm" variant="outline" className="ml-auto bg-card">
-            <a href="/alertas">Ver alertas</a>
+            <Link to="/alertas">Ver alertas</Link>
           </Button>
         </Card>
       )}
 
-      <Card className="mt-6 border-border p-4">
+      <Card className="sticky top-[4.25rem] z-20 mt-6 rounded-2xl border-border bg-surface/85 p-3 shadow-[var(--shadow-card)] backdrop-blur">
         <div className="grid gap-3 md:grid-cols-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -131,8 +133,8 @@ function Dashboard() {
         </Card>
       ) : (
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filtrados.map((p) => (
-            <PredioCard key={p.id} predio={p} />
+          {filtrados.map((p, i) => (
+            <PredioCard key={p.id} predio={p} index={i} />
           ))}
         </div>
       )}
@@ -179,14 +181,20 @@ function Kpi({
   value: string;
   tone?: "success" | "warning";
 }) {
-  const cls = tone === "success" ? "text-success" : tone === "warning" ? "text-warning-foreground" : "text-foreground";
+  const cls = tone === "success" ? "text-success" : tone === "warning" ? "text-warning-foreground" : "text-primary";
   return (
-    <Card className="gap-0 border-border p-5 shadow-[var(--shadow-card)]">
-      <p className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-        {icon}
+    <Card className="card-elevated relative gap-0 overflow-hidden rounded-2xl border-border p-5">
+      <span
+        aria-hidden
+        className={`absolute inset-x-0 top-0 h-0.5 ${
+          tone === "success" ? "bg-success/60" : tone === "warning" ? "bg-warning/70" : "bg-primary/50"
+        }`}
+      />
+      <p className="label-eyebrow flex items-center gap-2">
+        <span className="text-muted-foreground">{icon}</span>
         {label}
       </p>
-      <p className={`mt-2 font-display text-2xl ${cls}`}>{value}</p>
+      <p className={`mt-2.5 font-display text-[1.75rem] leading-none tabular-nums ${cls}`}>{value}</p>
     </Card>
   );
 }
