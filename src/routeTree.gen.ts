@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertasRouteImport } from './routes/alertas'
+import { Route as ConfiguracionRouteImport } from './routes/configuracion'
+import { Route as PrediosRouteImport } from './routes/predios'
+import { Route as ReportesRouteImport } from './routes/reportes'
 import { Route as PredioPredioIdRouteImport } from './routes/predio.$predioId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +26,21 @@ const AlertasRoute = AlertasRouteImport.update({
   path: '/alertas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfiguracionRoute = ConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrediosRoute = PrediosRouteImport.update({
+  id: '/predios',
+  path: '/predios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportesRoute = ReportesRouteImport.update({
+  id: '/reportes',
+  path: '/reportes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PredioPredioIdRoute = PredioPredioIdRouteImport.update({
   id: '/predio/$predioId',
   path: '/predio/$predioId',
@@ -32,30 +50,61 @@ const PredioPredioIdRoute = PredioPredioIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/predios': typeof PrediosRoute
+  '/reportes': typeof ReportesRoute
   '/predio/$predioId': typeof PredioPredioIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/predios': typeof PrediosRoute
+  '/reportes': typeof ReportesRoute
   '/predio/$predioId': typeof PredioPredioIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alertas': typeof AlertasRoute
+  '/configuracion': typeof ConfiguracionRoute
+  '/predios': typeof PrediosRoute
+  '/reportes': typeof ReportesRoute
   '/predio/$predioId': typeof PredioPredioIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/alertas' | '/predio/$predioId'
+  fullPaths:
+    | '/'
+    | '/alertas'
+    | '/configuracion'
+    | '/predios'
+    | '/reportes'
+    | '/predio/$predioId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alertas' | '/predio/$predioId'
-  id: '__root__' | '/' | '/alertas' | '/predio/$predioId'
+  to:
+    | '/'
+    | '/alertas'
+    | '/configuracion'
+    | '/predios'
+    | '/reportes'
+    | '/predio/$predioId'
+  id:
+    | '__root__'
+    | '/'
+    | '/alertas'
+    | '/configuracion'
+    | '/predios'
+    | '/reportes'
+    | '/predio/$predioId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertasRoute: typeof AlertasRoute
+  ConfiguracionRoute: typeof ConfiguracionRoute
+  PrediosRoute: typeof PrediosRoute
+  ReportesRoute: typeof ReportesRoute
   PredioPredioIdRoute: typeof PredioPredioIdRoute
 }
 
@@ -75,6 +124,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/configuracion': {
+      id: '/configuracion'
+      path: '/configuracion'
+      fullPath: '/configuracion'
+      preLoaderRoute: typeof ConfiguracionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/predios': {
+      id: '/predios'
+      path: '/predios'
+      fullPath: '/predios'
+      preLoaderRoute: typeof PrediosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reportes': {
+      id: '/reportes'
+      path: '/reportes'
+      fullPath: '/reportes'
+      preLoaderRoute: typeof ReportesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/predio/$predioId': {
       id: '/predio/$predioId'
       path: '/predio/$predioId'
@@ -88,6 +158,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertasRoute: AlertasRoute,
+  ConfiguracionRoute: ConfiguracionRoute,
+  PrediosRoute: PrediosRoute,
+  ReportesRoute: ReportesRoute,
   PredioPredioIdRoute: PredioPredioIdRoute,
 }
 export const routeTree = rootRouteImport

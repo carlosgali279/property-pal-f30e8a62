@@ -1,88 +1,72 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { AlertTriangle, Building2, Search, TrendingUp, Wallet } from "lucide-react";
+import { AlertTriangle, ArrowRight, Building2, TrendingUp, Wallet } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/AppShell";
-import { PredioCard } from "@/components/PredioCard";
-import { NuevoPredioDialog } from "@/components/NuevoPredioDialog";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { TIPOS_PREDIO, tiposAplicables } from "@/lib/mock-data";
-import { alertas, balance, completitud, fmtCOP } from "@/lib/selectors";
+import { alertas, balance, completitud, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard de predios — Portafolio Inmobiliario" },
+      { title: "Dashboard del portafolio — Portafolio Inmobiliario" },
       {
         name: "description",
         content:
-          "Centraliza tus predios: completitud documental, seguimiento financiero y alertas de vencimiento de contratos en un solo tablero.",
+          "Indicadores generales del portafolio: completitud documental, ingresos y gastos de los últimos 6 meses y alertas de vencimiento.",
       },
-      { property: "og:title", content: "Dashboard de predios — Portafolio Inmobiliario" },
+      { property: "og:title", content: "Dashboard del portafolio — Portafolio Inmobiliario" },
       {
         property: "og:description",
-        content: "Documentos, finanzas y alertas de todos tus predios en un tablero administrativo.",
+        content: "KPIs, balance de 6 meses, completitud por tipo de predio y vencimientos más urgentes.",
       },
     ],
   }),
-  component: Dashboard,
+  component: DashboardPage,
 });
 
-const TODOS = "__todos__";
+function DashboardPage() {
+  const { visiblePredios, documentos, movimientos, tiposDocumento, isAdmin, viewerLabel } = useStore();
 
-function Dashboard() {
-  const { visiblePredios, documentos, movimientos, tiposDocumento, contactoById, isAdmin, viewerLabel } = useStore();
-  const [q, setQ] = useState("");
-  const [ciudad, setCiudad] = useState(TODOS);
-  const [razon, setRazon] = useState(TODOS);
-  const [prop, setProp] = useState(TODOS);
-  const [tipoPredio, setTipoPredio] = useState(TODOS);
+  const movsVisibles = movimientos.filter((m) => visiblePredios.some((p) => p.id === m.predioId));
+  const bal = balance(movsVisibles);
+  const serie = seriePorMes(movsVisibles);
 
-  const ciudades = useMemo(() => [...new Set(visiblePredios.map((p) => p.ciudad))].sort(), [visiblePredios]);
-  const razones = useMemo(() => [...new Set(visiblePredios.map((p) => p.razonSocial))].sort(), [visiblePredios]);
-  const props = useMemo(() => {
-    const ids = new Set(visiblePredios.flatMap((p) => p.contactos.map((c) => c.contactoId)));
-    return [...ids].map((id) => contactoById(id)!).filter(Boolean);
-  }, [visiblePredios, contactoById]);
+  const incompletos = visiblePredios.filter((p) => {
+    const tipos = tiposAplicables(tiposDocumento, p.tipoPredio);
+    return completitud(documentos, p.id, tipos).cargados < tipos.length;
+  }).length;
 
-  const filtrados = visiblePredios.filter(
-    (p) =>
-      (ciudad === TODOS || p.ciudad === ciudad) &&
-      (razon === TODOS || p.razonSocial === razon) &&
-      (prop === TODOS || p.contactos.some((c) => c.contactoId === prop)) &&
-      (tipoPredio === TODOS || p.tipoPredio === tipoPredio) &&
-      (q.trim() === "" ||
-        `${p.nombre} ${p.direccion} ${p.ciudad} ${p.razonSocial}`.toLowerCase().includes(q.toLowerCase())),
-  );
+  const items = alertas(documentos, visiblePredios, 90);
+  const alertasCount = items.filter((a) => a.dias <= 30).length;
+  const urgentes = items.slice(0, 4);
 
-  const bal = balance(
-    movimientos.filter((m) => visiblePredios.some((p) => p.id === m.predioId)),
-  );
-  const incompletos = visiblePredios.filter(
-    (p) => {
+  const porTipo = TIPOS_PREDIO.map((t) => {
+    const lista = visiblePredios.filter((p) => p.tipoPredio === t.value);
+    let cargados = 0;
+    let total = 0;
+    for (const p of lista) {
       const tipos = tiposAplicables(tiposDocumento, p.tipoPredio);
-      return completitud(documentos, p.id, tipos).cargados < tipos.length;
-    },
-  ).length;
-  const alertasCount = alertas(documentos, visiblePredios).length;
+      const c = completitud(documentos, p.id, tipos);
+      cargados += c.cargados;
+      total += tipos.length;
+    }
+    return { ...t, predios: lista.length, pct: total === 0 ? 0 : Math.round((cargados / total) * 100) };
+  });
 
   return (
     <AppShell>
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            {isAdmin ? "Administración del portafolio" : `Vista de propietario · ${viewerLabel}`}
-          </p>
-          <h1 className="mt-1 text-3xl">Predios</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {visiblePredios.length} predios {isAdmin ? "en el portafolio" : "asociados a ti"} · estado documental y
-            financiero de un vistazo
-          </p>
-        </div>
-        {isAdmin && <NuevoPredioDialog />}
+      <div className="border-b border-border pb-6">
+        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          {isAdmin ? "Administración del portafolio" : `Vista de propietario · ${viewerLabel}`}
+        </p>
+        <h1 className="mt-1 text-3xl">Dashboard</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Estado general del portafolio: documentos, finanzas y vencimientos.
+        </p>
       </div>
 
       <div className="ledger-grid mt-7 sm:grid-cols-2 lg:grid-cols-4">
@@ -110,74 +94,98 @@ function Dashboard() {
         </div>
       )}
 
-      <div className="sticky top-[4.25rem] z-20 mt-6 border border-border bg-surface p-3">
-        <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar predio…"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              className="bg-background pl-9"
-            />
+      <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <Card className="border-border p-5 lg:col-span-2">
+          <p className="label-eyebrow">Ingresos vs. gastos · últimos 6 meses</p>
+          <div className="mt-4 h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={serie}>
+                <CartesianGrid stroke="var(--border)" vertical={false} />
+                <XAxis
+                  dataKey="mes"
+                  stroke="var(--muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={{ stroke: "var(--border)" }}
+                />
+                <YAxis
+                  stroke="var(--muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v: number) => `${Math.round(v / 1_000_000)}M`}
+                />
+                <Tooltip
+                  formatter={(v) => fmtCOP(Number(v))}
+                  contentStyle={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 0,
+                    color: "var(--foreground)",
+                    fontSize: 12,
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar name="Ingresos" dataKey="ingresos" fill="var(--chart-1)" radius={0} />
+                <Bar name="Gastos" dataKey="gastos" fill="var(--chart-2)" radius={0} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <Filtro value={ciudad} onChange={setCiudad} placeholder="Ubicación" options={ciudades.map((c) => [c, c])} />
-          <Filtro value={razon} onChange={setRazon} placeholder="Razón social" options={razones.map((r) => [r, r])} />
-          <Filtro
-            value={prop}
-            onChange={setProp}
-            placeholder="Propietario / socio"
-            options={props.map((c) => [c.id, c.nombre])}
-          />
-          <Filtro
-            value={tipoPredio}
-            onChange={setTipoPredio}
-            placeholder="Tipo de predio"
-            options={TIPOS_PREDIO.map((t) => [t.value, t.label] as [string, string])}
-          />
-        </div>
+        </Card>
+
+        <Card className="border-border p-5">
+          <p className="label-eyebrow">Completitud documental por tipo</p>
+          <ul className="mt-4 space-y-5">
+            {porTipo.map((t) => (
+              <li key={t.value}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm font-medium">{t.corto}</span>
+                  <span className="font-display text-xl tabular-nums">{t.pct}%</span>
+                </div>
+                <Progress value={t.pct} className="mt-2 h-2" />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t.predios} predio(s) · {t.label}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </div>
 
-      {filtrados.length === 0 ? (
-        <Card className="mt-6 border-dashed p-12 text-center text-muted-foreground">
-          No hay predios que coincidan con los filtros.
+      <h2 className="mt-10 text-lg">Vencimientos más urgentes</h2>
+      {urgentes.length === 0 ? (
+        <Card className="mt-3 border-dashed border-border bg-muted p-6 text-center text-sm text-muted-foreground">
+          Sin vencimientos en los próximos 90 días.
         </Card>
       ) : (
-        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filtrados.map((p, i) => (
-            <PredioCard key={p.id} predio={p} index={i} />
+        <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {urgentes.map((a, i) => (
+            <Link
+              key={`${a.predioId}-${a.tipo}-${i}`}
+              to="/predio/$predioId"
+              params={{ predioId: a.predioId }}
+              className="relative border border-border bg-surface p-4 pl-6 transition-colors hover:bg-muted"
+            >
+              <span
+                aria-hidden
+                className={`absolute inset-y-0 left-0 w-1.5 ${a.dias <= 15 ? "bg-destructive" : "bg-warning"}`}
+              />
+              <span
+                className={`stamp ${a.dias <= 15 ? "bg-destructive-soft text-destructive" : "bg-warning-soft text-warning-foreground"}`}
+              >
+                <span className="stamp-dot" aria-hidden />
+                {a.dias < 0 ? `Vencido hace ${Math.abs(a.dias)} días` : `En ${a.dias} días`}
+              </span>
+              <p className="mt-2 font-display text-lg leading-tight">{a.predioNombre}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{a.tipo}</p>
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-primary">
+                Termina el {fmtFecha(a.fecha)} <ArrowRight className="size-3.5" />
+              </p>
+            </Link>
           ))}
         </div>
       )}
     </AppShell>
-  );
-}
-
-function Filtro({
-  value,
-  onChange,
-  placeholder,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-  options: [string, string][];
-}) {
-  return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="bg-background">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={TODOS}>{placeholder}: todos</SelectItem>
-        {options.map(([v, l]) => (
-          <SelectItem key={v} value={v}>
-            {l}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
 
@@ -203,4 +211,3 @@ function Kpi({
     </div>
   );
 }
-

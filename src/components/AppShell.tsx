@@ -1,15 +1,37 @@
 import { Link } from "@tanstack/react-router";
-import { Building2, Bell, LayoutGrid, ShieldCheck, Eye } from "lucide-react";
+import { useState } from "react";
+import {
+  Building2,
+  Bell,
+  LayoutGrid,
+  ShieldCheck,
+  Eye,
+  Menu,
+  Gauge,
+  FileText,
+  Settings,
+} from "lucide-react";
 import { useStore } from "@/lib/store";
 import { alertas } from "@/lib/selectors";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { viewer, setViewer, contactos, isAdmin, documentos, visiblePredios } = useStore();
+  const [open, setOpen] = useState(false);
   const pendientes = alertas(documentos, visiblePredios).length;
 
   const value = viewer.kind === "admin" ? "admin" : `prop:${viewer.contactoId}`;
+
+  const nav = [
+    { to: "/", label: "Dashboard", icon: <Gauge className="size-4" />, exact: true },
+    { to: "/predios", label: "Predios", icon: <LayoutGrid className="size-4" /> },
+    { to: "/alertas", label: "Alertas", icon: <Bell className="size-4" />, count: pendientes },
+    { to: "/reportes", label: "Reportes", icon: <FileText className="size-4" /> },
+    { to: "/configuracion", label: "Configuración", icon: <Settings className="size-4" /> },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,11 +46,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
 
-          <nav className="ml-2 hidden items-center gap-1 md:flex">
-            <NavItem to="/" icon={<LayoutGrid className="size-4" />} label="Predios" />
-            <NavItem to="/alertas" icon={<Bell className="size-4" />} label="Alertas" count={pendientes} />
-          </nav>
-
           <div className="ml-auto flex items-center gap-3">
             <span
               className={`stamp hidden sm:inline-flex ${isAdmin ? "bg-primary-soft text-primary" : "bg-info-soft text-info-foreground"}`}
@@ -37,55 +54,68 @@ export function AppShell({ children }: { children: ReactNode }) {
               {isAdmin ? "Acceso total" : "Solo lectura"}
             </span>
 
-            <div className="flex items-center gap-2">
-              <span className="hidden text-xs uppercase tracking-wider text-muted-foreground sm:inline">Ver como</span>
-              <Select
-                value={value}
-                onValueChange={(v) =>
-                  setViewer(v === "admin" ? { kind: "admin" } : { kind: "propietario", contactoId: v.slice(5) })
-                }
-              >
-                <SelectTrigger className="w-[210px] bg-background">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" aria-label="Abrir menú" className="rounded-none bg-background">
+                  <Menu className="size-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[19rem] rounded-none border-l border-border bg-surface p-0">
+                <div className="border-b border-border px-5 py-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Navegación</p>
+                  <p className="mt-1 font-display text-lg leading-none">Portafolio de predios</p>
+                </div>
 
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin (yo)</SelectItem>
-                  {contactos.map((c) => (
-                    <SelectItem key={c.id} value={`prop:${c.id}`}>
-                      {c.nombre}
-                    </SelectItem>
+                <nav className="flex flex-col border-b border-border">
+                  {nav.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setOpen(false)}
+                      activeOptions={{ exact: item.exact === true }}
+                      className="flex items-center gap-3 border-b border-border px-5 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground data-[status=active]:bg-muted data-[status=active]:text-foreground"
+                    >
+                      {item.icon}
+                      {item.label}
+                      {item.count ? (
+                        <span className="ml-auto border border-destructive/40 bg-destructive-soft px-1.5 text-[11px] font-bold tabular-nums text-destructive">
+                          {item.count}
+                        </span>
+                      ) : null}
+                    </Link>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
+                </nav>
+
+                <div className="px-5 py-5">
+                  <p className="label-eyebrow">Ver como</p>
+                  <Select
+                    value={value}
+                    onValueChange={(v) =>
+                      setViewer(v === "admin" ? { kind: "admin" } : { kind: "propietario", contactoId: v.slice(5) })
+                    }
+                  >
+                    <SelectTrigger className="mt-2 w-full bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin (yo)</SelectItem>
+                      {contactos.map((c) => (
+                        <SelectItem key={c.id} value={`prop:${c.id}`}>
+                          {c.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {isAdmin ? "Acceso total de administración." : "Vista de solo lectura de tus predios."}
+                  </p>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
-        <nav className="flex items-center gap-1 border-t border-border px-4 py-1.5 md:hidden">
-          <NavItem to="/" icon={<LayoutGrid className="size-4" />} label="Predios" />
-          <NavItem to="/alertas" icon={<Bell className="size-4" />} label="Alertas" count={pendientes} />
-        </nav>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">{children}</main>
     </div>
   );
 }
-
-function NavItem({ to, icon, label, count }: { to: string; icon: ReactNode; label: string; count?: number }) {
-  return (
-    <Link
-      to={to}
-      activeOptions={{ exact: to === "/" }}
-      className="flex items-center gap-2 rounded-none border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-border data-[status=active]:bg-muted data-[status=active]:text-foreground"
-    >
-      {icon}
-      {label}
-      {count ? (
-        <span className="border border-destructive/40 bg-destructive-soft px-1.5 text-[11px] font-bold tabular-nums text-destructive">
-          {count}
-        </span>
-      ) : null}
-    </Link>
-  );
-}
-
