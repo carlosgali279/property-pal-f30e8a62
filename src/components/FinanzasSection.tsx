@@ -98,24 +98,26 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
               .sort((a, b) => b.fecha.localeCompare(a.fecha))
               .map((m) => (
                 <TableRow key={m.id}>
-                  <TableCell className="whitespace-nowrap">{fmtFecha(m.fecha)}</TableCell>
+                  <TableCell className="whitespace-nowrap tabular-nums">{fmtFecha(m.fecha)}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
+                    <span
+                      className={`stamp ${
                         m.tipo === "ingreso"
-                          ? "border-success/25 bg-success/12 text-success"
-                          : "border-destructive/25 bg-destructive/10 text-destructive"
-                      }
+                          ? "bg-primary-soft text-primary"
+                          : "bg-destructive-soft text-destructive"
+                      }`}
                     >
+                      <span className="stamp-dot" aria-hidden />
                       {m.tipo === "ingreso" ? "Ingreso" : "Gasto"}
-                    </Badge>
+                    </span>
                   </TableCell>
+
                   <TableCell>{m.categoria}</TableCell>
                   <TableCell className="text-muted-foreground">{m.nota ?? "—"}</TableCell>
                   <TableCell
-                    className={`text-right font-medium ${m.tipo === "ingreso" ? "text-success" : "text-destructive"}`}
+                    className={`text-right font-medium tabular-nums ${m.tipo === "ingreso" ? "text-primary" : "text-destructive"}`}
                   >
+
                     {m.tipo === "ingreso" ? "+" : "−"}
                     {fmtCOP(m.monto)}
                   </TableCell>
@@ -151,14 +153,15 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
 }
 
 function Total({ label, value, tone }: { label: string; value: number; tone?: "success" | "destructive" }) {
-  const cls = tone === "success" ? "text-success" : tone === "destructive" ? "text-destructive" : "text-foreground";
+  const cls = tone === "success" ? "text-primary" : tone === "destructive" ? "text-destructive" : "text-foreground";
   return (
-    <Card className="gap-0 border-border p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={`mt-1.5 font-display text-2xl ${cls}`}>{fmtCOP(value)}</p>
-    </Card>
+    <div className="ledger-cell">
+      <p className="label-eyebrow">{label}</p>
+      <p className={`mt-1.5 font-display text-2xl tabular-nums ${cls}`}>{fmtCOP(value)}</p>
+    </div>
   );
 }
+
 
 function MovimientoDialog({ predio }: { predio: Predio }) {
   const { addMovimiento } = useStore();
