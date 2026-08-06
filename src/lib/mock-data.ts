@@ -240,8 +240,9 @@ export const predios: Predio[] = [
       { contactoId: "c1", rol: "socio", participacion: 20 },
     ],
     arrendatario: {
-      nombre: "Distribuciones Andes S.A."
-,      nit: "890.331.442-2",
+      nombre: "Distribuciones Andes S.A.",
+      nit: "890.331.442-2",
+
       desde: "2023-01-15",
       contactos: [
         { id: "a8", nombre: "Ricardo Peláez", rol: "representante_legal", cargo: "Director de operaciones", email: "r.pelaez@distandes.com", telefono: "+57 604 210 7788" },
