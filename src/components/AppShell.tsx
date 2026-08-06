@@ -37,30 +37,33 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-surface">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-none bg-primary text-primary-foreground">
-              <Building2 className="size-5" />
-            </span>
-            <span className="font-display text-lg leading-none">
-              Portafolio<span className="text-muted-foreground"> / predios</span>
-            </span>
-          </Link>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" aria-label="Abrir menú" className="mr-3 rounded-none bg-background">
+                <Menu className="size-5" />
+              </Button>
+            </SheetTrigger>
 
-          <div className="ml-auto flex items-center gap-3">
-            <span
-              className={`stamp hidden sm:inline-flex ${isAdmin ? "bg-primary-soft text-primary" : "bg-info-soft text-info-foreground"}`}
-            >
-              {isAdmin ? <ShieldCheck className="size-3.5" /> : <Eye className="size-3.5" />}
-              {isAdmin ? "Acceso total" : "Solo lectura"}
-            </span>
+            <Link to="/" className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-none bg-primary text-primary-foreground">
+                <Building2 className="size-5" />
+              </span>
+              <span className="font-display text-lg leading-none">
+                Portafolio<span className="text-muted-foreground"> / predios</span>
+              </span>
+            </Link>
 
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="Abrir menú" className="rounded-none bg-background">
-                  <Menu className="size-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[19rem] rounded-none border-l border-border bg-surface p-0">
+            <div className="ml-auto flex items-center gap-3">
+              <span
+                className={`stamp hidden sm:inline-flex ${isAdmin ? "bg-primary-soft text-primary" : "bg-info-soft text-info-foreground"}`}
+              >
+                {isAdmin ? <ShieldCheck className="size-3.5" /> : <Eye className="size-3.5" />}
+                {isAdmin ? "Acceso total" : "Solo lectura"}
+              </span>
+            </div>
+
+              <SheetContent side="left" className="w-[19rem] rounded-none border-r border-border bg-surface p-0">
+
                 <div className="border-b border-border px-5 py-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Navegación</p>
                   <p className="mt-1 font-display text-lg leading-none">Portafolio de predios</p>
@@ -112,8 +115,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
         </div>
+
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">{children}</main>
     </div>
