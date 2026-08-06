@@ -14,10 +14,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border bg-surface">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <span className="flex size-9 items-center justify-center rounded-none bg-primary text-primary-foreground">
               <Building2 className="size-5" />
             </span>
             <span className="font-display text-lg leading-none">
@@ -31,13 +31,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="ml-auto flex items-center gap-3">
-            <Badge
-              variant="outline"
-              className="hidden gap-1.5 border-border bg-secondary text-secondary-foreground sm:flex"
+            <span
+              className={`stamp hidden sm:inline-flex ${isAdmin ? "bg-primary-soft text-primary" : "bg-info-soft text-info-foreground"}`}
             >
               {isAdmin ? <ShieldCheck className="size-3.5" /> : <Eye className="size-3.5" />}
               {isAdmin ? "Acceso total" : "Solo lectura"}
-            </Badge>
+            </span>
+
             <div className="flex items-center gap-2">
               <span className="hidden text-xs uppercase tracking-wider text-muted-foreground sm:inline">Ver como</span>
               <Select
