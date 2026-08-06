@@ -7,6 +7,24 @@ export const ESTADOS: { value: EstadoPredio; label: string }[] = [
   { value: "en_tramite", label: "En trámite" },
 ];
 
+export type TipoPredio = "comercial" | "no_arrendado";
+
+export const TIPOS_PREDIO: { value: TipoPredio; label: string; corto: string }[] = [
+  { value: "comercial", label: "Comercial (se arrienda)", corto: "Comercial" },
+  { value: "no_arrendado", label: "No arrendado (ej. finca)", corto: "No arrendado" },
+];
+
+/** Documentos que solo aplican a predios comerciales (arrendados). */
+export const DOCS_SOLO_COMERCIAL = ["Contrato de arrendamiento", "Otrosí", "Contacto del arrendatario"];
+
+/** Tipos de documento exigibles según el tipo de predio. */
+export const tiposAplicables = (tipos: string[], tipoPredio: TipoPredio) =>
+  tipoPredio === "comercial" ? tipos : tipos.filter((t) => !DOCS_SOLO_COMERCIAL.includes(t));
+
+/** Categorías de ingreso disponibles según el tipo de predio. */
+export const categoriasIngreso = (tipoPredio: TipoPredio) =>
+  tipoPredio === "comercial" ? CATEGORIAS_INGRESO : CATEGORIAS_INGRESO.filter((c) => c === "Otros");
+
 export type RolContacto = "propietario_principal" | "socio";
 
 export interface Contacto {
@@ -54,6 +72,7 @@ export interface Predio {
   ciudad: string;
   razonSocial: string;
   estado: EstadoPredio;
+  tipoPredio: TipoPredio;
   contactos: VinculoContacto[];
 }
 
@@ -94,6 +113,7 @@ export const predios: Predio[] = [
     ciudad: "Medellín",
     razonSocial: "Inmobiliaria Andina S.A.S.",
     estado: "arrendado",
+    tipoPredio: "comercial",
     contactos: [
       { contactoId: "c1", rol: "propietario_principal", participacion: 60 },
       { contactoId: "c2", rol: "socio", participacion: 40 },
@@ -106,6 +126,7 @@ export const predios: Predio[] = [
     ciudad: "Medellín",
     razonSocial: "Grupo Vargas & Cía.",
     estado: "arrendado",
+    tipoPredio: "comercial",
     contactos: [{ contactoId: "c2", rol: "propietario_principal", participacion: 100 }],
   },
   {
@@ -115,6 +136,7 @@ export const predios: Predio[] = [
     ciudad: "La Estrella",
     razonSocial: "Constructora Delta S.A.S.",
     estado: "en_construccion",
+    tipoPredio: "no_arrendado",
     contactos: [
       { contactoId: "c4", rol: "propietario_principal", participacion: 70 },
       { contactoId: "c3", rol: "socio", participacion: 30 },
@@ -127,6 +149,7 @@ export const predios: Predio[] = [
     ciudad: "Bogotá",
     razonSocial: "Inmobiliaria Andina S.A.S.",
     estado: "arrendado",
+    tipoPredio: "comercial",
     contactos: [
       { contactoId: "c1", rol: "propietario_principal", participacion: 50 },
       { contactoId: "c5", rol: "socio", participacion: 50 },
@@ -139,6 +162,7 @@ export const predios: Predio[] = [
     ciudad: "Envigado",
     razonSocial: "Predios del Norte Ltda.",
     estado: "disponible",
+    tipoPredio: "no_arrendado",
     contactos: [{ contactoId: "c3", rol: "propietario_principal", participacion: 100 }],
   },
   {
@@ -148,6 +172,7 @@ export const predios: Predio[] = [
     ciudad: "Rionegro",
     razonSocial: "Constructora Delta S.A.S.",
     estado: "arrendado",
+    tipoPredio: "comercial",
     contactos: [
       { contactoId: "c4", rol: "propietario_principal", participacion: 80 },
       { contactoId: "c1", rol: "socio", participacion: 20 },
@@ -160,6 +185,7 @@ export const predios: Predio[] = [
     ciudad: "Medellín",
     razonSocial: "Grupo Vargas & Cía.",
     estado: "en_tramite",
+    tipoPredio: "no_arrendado",
     contactos: [{ contactoId: "c5", rol: "propietario_principal", participacion: 100 }],
   },
   {
@@ -169,6 +195,7 @@ export const predios: Predio[] = [
     ciudad: "Bucaramanga",
     razonSocial: "Predios del Norte Ltda.",
     estado: "arrendado",
+    tipoPredio: "comercial",
     contactos: [
       { contactoId: "c2", rol: "propietario_principal", participacion: 55 },
       { contactoId: "c3", rol: "socio", participacion: 45 },

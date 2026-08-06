@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { TIPOS_PREDIO, tiposAplicables } from "@/lib/mock-data";
 import { alertas, balance, completitud, fmtCOP } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
@@ -38,6 +39,7 @@ function Dashboard() {
   const [ciudad, setCiudad] = useState(TODOS);
   const [razon, setRazon] = useState(TODOS);
   const [prop, setProp] = useState(TODOS);
+  const [tipoPredio, setTipoPredio] = useState(TODOS);
 
   const ciudades = useMemo(() => [...new Set(visiblePredios.map((p) => p.ciudad))].sort(), [visiblePredios]);
   const razones = useMemo(() => [...new Set(visiblePredios.map((p) => p.razonSocial))].sort(), [visiblePredios]);
@@ -51,6 +53,7 @@ function Dashboard() {
       (ciudad === TODOS || p.ciudad === ciudad) &&
       (razon === TODOS || p.razonSocial === razon) &&
       (prop === TODOS || p.contactos.some((c) => c.contactoId === prop)) &&
+      (tipoPredio === TODOS || p.tipoPredio === tipoPredio) &&
       (q.trim() === "" ||
         `${p.nombre} ${p.direccion} ${p.ciudad} ${p.razonSocial}`.toLowerCase().includes(q.toLowerCase())),
   );
@@ -59,7 +62,10 @@ function Dashboard() {
     movimientos.filter((m) => visiblePredios.some((p) => p.id === m.predioId)),
   );
   const incompletos = visiblePredios.filter(
-    (p) => completitud(documentos, p.id, tiposDocumento).cargados < tiposDocumento.length,
+    (p) => {
+      const tipos = tiposAplicables(tiposDocumento, p.tipoPredio);
+      return completitud(documentos, p.id, tipos).cargados < tipos.length;
+    },
   ).length;
   const alertasCount = alertas(documentos, visiblePredios).length;
 
@@ -106,7 +112,7 @@ function Dashboard() {
       )}
 
       <Card className="sticky top-[4.25rem] z-20 mt-6 rounded-2xl border-border bg-surface/85 p-3 shadow-[var(--shadow-card)] backdrop-blur">
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -123,6 +129,12 @@ function Dashboard() {
             onChange={setProp}
             placeholder="Propietario / socio"
             options={props.map((c) => [c.id, c.nombre])}
+          />
+          <Filtro
+            value={tipoPredio}
+            onChange={setTipoPredio}
+            placeholder="Tipo de predio"
+            options={TIPOS_PREDIO.map((t) => [t.value, t.label] as [string, string])}
           />
         </div>
       </Card>

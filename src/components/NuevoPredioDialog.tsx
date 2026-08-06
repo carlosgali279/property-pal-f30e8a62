@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ESTADOS, razonesSociales, type EstadoPredio, type Predio } from "@/lib/mock-data";
+import { ESTADOS, razonesSociales, TIPOS_PREDIO, type EstadoPredio, type Predio, type TipoPredio } from "@/lib/mock-data";
 import { newPredioId, useStore } from "@/lib/store";
 
 export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
@@ -26,6 +26,7 @@ export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
   const [ciudad, setCiudad] = useState(predio?.ciudad ?? "");
   const [razonSocial, setRazonSocial] = useState<string>(predio?.razonSocial ?? razonesSociales[0]!);
   const [estado, setEstado] = useState<EstadoPredio>(predio?.estado ?? "disponible");
+  const [tipoPredio, setTipoPredio] = useState<TipoPredio>(predio?.tipoPredio ?? "comercial");
   const [seleccion, setSeleccion] = useState<string[]>(predio?.contactos.map((c) => c.contactoId) ?? []);
 
   const guardar = () => {
@@ -40,6 +41,7 @@ export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
       ciudad: ciudad.trim(),
       razonSocial,
       estado,
+      tipoPredio,
       contactos: seleccion.map((id, i) => ({
         contactoId: id,
         rol: i === 0 ? "propietario_principal" : "socio",
@@ -114,6 +116,24 @@ export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="grid gap-2">
+            <Label>Tipo de predio</Label>
+            <Select value={tipoPredio} onValueChange={(v) => setTipoPredio(v as TipoPredio)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TIPOS_PREDIO.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Los predios no arrendados no exigen contrato de arrendamiento, otrosí ni contacto del arrendatario.
+            </p>
           </div>
           <div className="grid gap-2">
             <Label>Propietarios y socios</Label>

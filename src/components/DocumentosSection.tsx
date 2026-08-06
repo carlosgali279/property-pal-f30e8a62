@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { Predio } from "@/lib/mock-data";
+import { tiposAplicables, type Predio } from "@/lib/mock-data";
 import { diasHasta, fmtFecha } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
@@ -23,7 +23,8 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
   const [tipoActivo, setTipoActivo] = useState<string | null>(null);
   const [nuevoTipo, setNuevoTipo] = useState("");
   const [openTipo, setOpenTipo] = useState(false);
-  const docs = documentos.filter((d) => d.predioId === predio.id);
+  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const docs = documentos.filter((d) => d.predioId === predio.id && tipos.includes(d.tipo));
 
   return (
     <section className="space-y-4">
@@ -31,7 +32,7 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
         <div>
           <h2 className="text-xl">Documentos</h2>
           <p className="text-sm text-muted-foreground">
-            {docs.length} de {tiposDocumento.length} tipos de documento cargados
+            {docs.length} de {tipos.length} tipos de documento cargados
           </p>
         </div>
         {isAdmin && (
@@ -42,7 +43,7 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
       </div>
 
       <div className="grid gap-3">
-        {tiposDocumento.map((tipo) => {
+        {tipos.map((tipo) => {
           const doc = docs.find((d) => d.tipo === tipo);
           const dias = doc?.contrato ? diasHasta(doc.contrato.fechaTerminacion) : null;
           return (
