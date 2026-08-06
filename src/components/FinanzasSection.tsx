@@ -41,19 +41,19 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
         {isAdmin && <MovimientoDialog predio={predio} />}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="ledger-grid sm:grid-cols-3">
         <Total label="Ingresos" value={bal.ingresos} tone="success" />
         <Total label="Gastos" value={bal.gastos} tone="destructive" />
         <Total label="Balance neto" value={bal.neto} />
       </div>
 
       <Card className="border-border p-5">
-        <p className="text-sm font-medium">Balance por periodo</p>
+        <p className="label-eyebrow">Balance por periodo</p>
         <div className="mt-4 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={serie}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-              <XAxis dataKey="mes" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="mes" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={{ stroke: "var(--border)" }} />
               <YAxis
                 stroke="var(--muted-foreground)"
                 fontSize={12}
@@ -64,21 +64,22 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
               <Tooltip
                 formatter={(v) => fmtCOP(Number(v))}
                 contentStyle={{
-                  background: "var(--card)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
-                  borderRadius: 8,
+                  borderRadius: 0,
                   color: "var(--foreground)",
                   fontSize: 12,
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar name="Ingresos" dataKey="ingresos" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-              <Bar name="Gastos" dataKey="gastos" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-              <Line name="Neto" type="monotone" dataKey="neto" stroke="var(--chart-5)" strokeWidth={2} dot={false} />
+              <Bar name="Ingresos" dataKey="ingresos" fill="var(--chart-1)" radius={0} />
+              <Bar name="Gastos" dataKey="gastos" fill="var(--chart-2)" radius={0} />
+              <Line name="Neto" type="linear" dataKey="neto" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
+
 
       <Card className="overflow-hidden border-border p-0">
         <Table>
