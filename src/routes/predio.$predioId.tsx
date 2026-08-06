@@ -3,7 +3,8 @@ import { ArrowLeft, Building2, FileSpreadsheet, FileText, Mail, MapPin, Phone } 
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { AlertList } from "@/components/AlertList";
-import { ArrendatarioSection } from "@/components/ArrendatarioSection";
+import { ContactosSection } from "@/components/ContactosSection";
+import { PredioResumen } from "@/components/PredioResumen";
 import { DocumentosSection } from "@/components/DocumentosSection";
 import { FinanzasSection } from "@/components/FinanzasSection";
 import { EstadoBadge } from "@/components/EstadoBadge";
@@ -112,85 +113,27 @@ function PredioDetalle() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        <Card className="border-border p-5 lg:col-span-2">
-          <h2 className="text-lg">Propietarios y socios</h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {predio.contactos.map((v) => {
-              const c = contactoById(v.contactoId);
-              const principal = v.rol === "propietario_principal";
-              return (
-                <li key={v.contactoId} className="relative border border-border bg-surface p-4 pl-6">
-                  <span
-                    aria-hidden
-                    className={`absolute inset-y-0 left-0 w-1.5 ${principal ? "bg-primary" : "bg-neutral"}`}
-                  />
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{c?.nombre}</p>
-                    <span className={`stamp ${principal ? "bg-primary-soft text-primary" : "bg-neutral-soft text-muted-foreground"}`}>
-                      <span className="stamp-dot" aria-hidden />
-                      {principal ? "Principal" : "Socio"}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-                    Participación {v.participacion ?? "—"}%
-                  </p>
-                  <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Mail className="size-3.5" /> {c?.email}
-                  </p>
-                  <p className="mt-1 flex items-center gap-1.5 text-sm tabular-nums text-muted-foreground">
-                    <Phone className="size-3.5" /> {c?.telefono}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-
-        </Card>
-
-        <Card className="gap-0 border-border p-5">
-          <h2 className="text-lg">Completitud documental</h2>
-          <p className="mt-3 font-display text-3xl">
-            {comp.cargados}
-            <span className="text-muted-foreground">/{comp.total}</span>
-          </p>
-          <Progress value={pct} className="mt-3 h-2" />
-          {comp.faltantes.length > 0 ? (
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Faltantes</p>
-              <ul className="mt-2 space-y-1 text-sm">
-                {comp.faltantes.map((f) => (
-                  <li key={f} className="text-muted-foreground">
-                    • {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-success">Toda la documentación está cargada.</p>
-          )}
-        </Card>
-      </div>
-
-      {predio.tipoPredio === "comercial" && (
-        <div className="mt-5">
-          <ArrendatarioSection predio={predio} />
-        </div>
-      )}
-
-      <Tabs defaultValue="documentos" className="mt-8">
+      <Tabs defaultValue="resumen" className="mt-6">
         <TabsList>
+          <TabsTrigger value="resumen">Resumen</TabsTrigger>
           <TabsTrigger value="documentos">Documentos</TabsTrigger>
           <TabsTrigger value="finanzas">Financiero</TabsTrigger>
+          <TabsTrigger value="contactos">Contactos</TabsTrigger>
           <TabsTrigger value="alertas">
             Alertas{alertasPredio.length ? ` (${alertasPredio.length})` : ""}
           </TabsTrigger>
         </TabsList>
+        <TabsContent value="resumen" className="mt-6">
+          <PredioResumen predio={predio} />
+        </TabsContent>
         <TabsContent value="documentos" className="mt-6">
           <DocumentosSection predio={predio} />
         </TabsContent>
         <TabsContent value="finanzas" className="mt-6">
           <FinanzasSection predio={predio} />
+        </TabsContent>
+        <TabsContent value="contactos" className="mt-6">
+          <ContactosSection predio={predio} />
         </TabsContent>
         <TabsContent value="alertas" className="mt-6 space-y-4">
           <div>
