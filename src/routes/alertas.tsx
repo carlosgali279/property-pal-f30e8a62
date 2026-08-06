@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { AlertList } from "@/components/AlertList";
-import { alertas } from "@/lib/selectors";
+import { alertas, alertasImpuestos } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/alertas")({
@@ -23,8 +23,10 @@ export const Route = createFileRoute("/alertas")({
 });
 
 function AlertasPage() {
-  const { documentos, visiblePredios, isAdmin, viewerLabel } = useStore();
-  const items = alertas(documentos, visiblePredios, 90);
+  const { documentos, impuestos, visiblePredios, isAdmin, viewerLabel } = useStore();
+  const items = [...alertas(documentos, visiblePredios, 90), ...alertasImpuestos(impuestos, visiblePredios, 90)].sort(
+    (a, b) => a.dias - b.dias,
+  );
   const vencidos = items.filter((a) => a.dias < 0);
   const proximos30 = items.filter((a) => a.dias >= 0 && a.dias <= 30);
   const resto = items.filter((a) => a.dias > 30);
@@ -38,7 +40,7 @@ function AlertasPage() {
         <h1 className="mt-1 text-3xl">Alertas de vencimiento</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {items.length} registro(s) ordenados por urgencia, calculados a partir de las fechas de terminación de los
-          contratos.
+          contratos y de las fechas tentativas de pago de impuestos.
         </p>
       </div>
 

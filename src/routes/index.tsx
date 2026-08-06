@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { TIPOS_PREDIO, tiposAplicables } from "@/lib/mock-data";
-import { alertas, balance, completitud, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
+import { alertas, alertasImpuestos, balance, completitud, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 function DashboardPage() {
-  const { visiblePredios, documentos, movimientos, tiposDocumento, isAdmin, viewerLabel } = useStore();
+  const { visiblePredios, documentos, movimientos, impuestos, tiposDocumento, isAdmin, viewerLabel } = useStore();
 
   const movsVisibles = movimientos.filter((m) => visiblePredios.some((p) => p.id === m.predioId));
   const bal = balance(movsVisibles);
@@ -40,7 +40,9 @@ function DashboardPage() {
     return completitud(documentos, p.id, tipos).cargados < tipos.length;
   }).length;
 
-  const items = alertas(documentos, visiblePredios, 90);
+  const items = [...alertas(documentos, visiblePredios, 90), ...alertasImpuestos(impuestos, visiblePredios, 90)].sort(
+    (a, b) => a.dias - b.dias,
+  );
   const alertasCount = items.filter((a) => a.dias <= 30).length;
   const urgentes = items.slice(0, 4);
 
@@ -86,7 +88,8 @@ function DashboardPage() {
           <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 bg-warning" />
           <AlertTriangle className="size-4 shrink-0 text-warning-foreground" />
           <p className="text-sm text-warning-foreground">
-            <span className="font-semibold">{alertasCount} contrato(s)</span> con vencimiento en los próximos 30 días.
+            <span className="font-semibold">{alertasCount} vencimiento(s)</span> de contratos e impuestos en los próximos 30
+            días.
           </p>
           <Button asChild size="sm" variant="outline" className="ml-auto bg-surface">
             <Link to="/alertas">Ver alertas</Link>

@@ -6,6 +6,7 @@ import { AlertList } from "@/components/AlertList";
 import { ContactosSection } from "@/components/ContactosSection";
 import { PredioResumen } from "@/components/PredioResumen";
 import { DocumentosSection } from "@/components/DocumentosSection";
+import { ImpuestosSection } from "@/components/ImpuestosSection";
 import { FinanzasSection } from "@/components/FinanzasSection";
 import { EstadoBadge } from "@/components/EstadoBadge";
 import { TipoPredioBadge } from "@/components/TipoPredioBadge";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportarExcel, exportarPDF } from "@/lib/reports";
-import { alertas } from "@/lib/selectors";
+import { alertas, alertasImpuestos } from "@/lib/selectors";
 import { tiposAplicables } from "@/lib/mock-data";
 import { useStore } from "@/lib/store";
 
@@ -39,7 +40,8 @@ export const Route = createFileRoute("/predio/$predioId")({
 
 function PredioDetalle() {
   const { predioId } = Route.useParams();
-  const { visiblePredios, documentos, movimientos, tiposDocumento, contactoById, isAdmin, viewerLabel } = useStore();
+  const { visiblePredios, documentos, movimientos, impuestos, tiposDocumento, contactoById, isAdmin, viewerLabel } =
+    useStore();
   const predio = visiblePredios.find((p) => p.id === predioId);
 
   if (!predio) {
@@ -59,7 +61,9 @@ function PredioDetalle() {
   }
 
   const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
-  const alertasPredio = alertas(documentos, [predio], 90);
+  const alertasPredio = predio
+    ? [...alertas(documentos, [predio], 90), ...alertasImpuestos(impuestos, [predio], 90)].sort((a, b) => a.dias - b.dias)
+    : [];
 
   const reportInput = { predio, documentos, movimientos, tipos, contactoById };
 
@@ -115,6 +119,7 @@ function PredioDetalle() {
           <TabsTrigger value="resumen">Resumen</TabsTrigger>
           <TabsTrigger value="documentos">Documentos</TabsTrigger>
           <TabsTrigger value="finanzas">Financiero</TabsTrigger>
+          <TabsTrigger value="impuestos">Impuestos</TabsTrigger>
           <TabsTrigger value="contactos">Contactos</TabsTrigger>
           <TabsTrigger value="alertas">
             Alertas{alertasPredio.length ? ` (${alertasPredio.length})` : ""}
@@ -129,6 +134,9 @@ function PredioDetalle() {
         <TabsContent value="finanzas" className="mt-6">
           <FinanzasSection predio={predio} />
         </TabsContent>
+        <TabsContent value="impuestos" className="mt-6">
+          <ImpuestosSection predio={predio} />
+        </TabsContent>
         <TabsContent value="contactos" className="mt-6">
           <ContactosSection predio={predio} />
         </TabsContent>
@@ -136,7 +144,7 @@ function PredioDetalle() {
           <div>
             <h2 className="text-xl">Vencimientos del predio</h2>
             <p className="text-sm text-muted-foreground">
-              Calculados desde las fechas de terminación de los contratos cargados.
+              Calculados desde las fechas de terminación de los contratos y las fechas tentativas de pago de impuestos.
             </p>
           </div>
           <AlertList items={alertasPredio} showPredio={false} />
