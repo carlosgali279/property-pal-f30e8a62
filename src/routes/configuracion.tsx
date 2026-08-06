@@ -217,7 +217,7 @@ function RolesPanel() {
           <Button
             className="gap-2"
             onClick={() => {
-              if (!nuevo.nombre.trim()) return toast.error("Escribe un nombre.");
+              if (!nuevo.nombre.trim()) { toast.error("Escribe un nombre."); return; }
               const id = addContacto({
                 nombre: nuevo.nombre.trim(),
                 email: nuevo.email.trim(),
@@ -286,7 +286,7 @@ function DocumentosPanel() {
                       className="gap-1.5"
                       onClick={() => {
                         const nombre = borrador.trim();
-                        if (!nombre) return toast.error("El nombre no puede estar vacío.");
+                        if (!nombre) { toast.error("El nombre no puede estar vacío."); return; }
                         renombrarTipoDocumento(t, nombre, solo);
                         setEditando(null);
                         toast.success("Tipo de documento actualizado");
@@ -369,7 +369,7 @@ function DocumentosPanel() {
             className="gap-2"
             onClick={() => {
               const nombre = nuevo.trim();
-              if (!nombre) return toast.error("Escribe el nombre del documento.");
+              if (!nombre) { toast.error("Escribe el nombre del documento."); return; }
               addTipoDocumento(nombre, nuevoSolo);
               setNuevo("");
               setNuevoSolo(false);
@@ -415,7 +415,7 @@ function AlertasPanel() {
           <Button
             onClick={() => {
               const n = Number(valor);
-              if (!n || n < 1) return toast.error("Ingresa un número de días válido.");
+              if (!n || n < 1) { toast.error("Ingresa un número de días válido."); return; }
               setVentanaAlertas(n);
               toast.success(`Ahora se avisa con ${Math.round(n)} días de anticipación`);
             }}
@@ -489,7 +489,7 @@ function RazonesPanel() {
                     className="gap-1.5"
                     onClick={() => {
                       const nombre = borrador.trim();
-                      if (!nombre) return toast.error("El nombre no puede estar vacío.");
+                      if (!nombre) { toast.error("El nombre no puede estar vacío."); return; }
                       renombrarRazonSocial(r, nombre);
                       setEditando(null);
                       toast.success("Razón social actualizada");
@@ -521,7 +521,7 @@ function RazonesPanel() {
                     variant="outline"
                     className="gap-1.5 text-destructive"
                     onClick={() => {
-                      if (usados > 0) return toast.error("No se puede quitar: hay predios asociados.");
+                      if (usados > 0) { toast.error("No se puede quitar: hay predios asociados."); return; }
                       eliminarRazonSocial(r);
                       toast.success("Razón social eliminada");
                     }}
@@ -548,7 +548,7 @@ function RazonesPanel() {
             className="gap-2"
             onClick={() => {
               const nombre = nueva.trim();
-              if (!nombre) return toast.error("Escribe una razón social.");
+              if (!nombre) { toast.error("Escribe una razón social."); return; }
               addRazonSocial(nombre);
               setNueva("");
               toast.success("Razón social agregada");
