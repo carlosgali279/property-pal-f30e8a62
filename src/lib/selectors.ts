@@ -1,4 +1,4 @@
-import type { Documento, Movimiento, Predio } from "./mock-data";
+import type { Documento, Impuesto, Movimiento, Predio } from "./mock-data";
 
 export const fmtCOP = (n: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
@@ -59,6 +59,28 @@ export function alertas(docs: Documento[], predios: Predio[], ventanaDias = 30):
       fecha: d.contrato.fechaTerminacion,
       dias,
       detalle: `Aumento pactado del canon: ${d.contrato.aumentoCanon}%`,
+      severidad: dias < 0 ? "vencida" : dias <= 15 ? "critica" : "proxima",
+    });
+  }
+  return out.sort((a, b) => a.dias - b.dias);
+}
+
+/** Alertas de pago de impuestos, según la fecha tentativa de pago. */
+export function alertasImpuestos(imps: Impuesto[], predios: Predio[], ventanaDias = 30): Alerta[] {
+  const out: Alerta[] = [];
+  for (const i of imps) {
+    if (i.pagado) continue;
+    const predio = predios.find((p) => p.id === i.predioId);
+    if (!predio) continue;
+    const dias = diasHasta(i.fechaLimite);
+    if (dias > ventanaDias) continue;
+    out.push({
+      predioId: predio.id,
+      predioNombre: predio.nombre,
+      tipo: `${i.tipo} ${i.periodo}`,
+      fecha: i.fechaLimite,
+      dias,
+      detalle: `${i.archivo ? "Recibo cargado" : "Sin recibo cargado"} · ${fmtCOP(i.monto)}`,
       severidad: dias < 0 ? "vencida" : dias <= 15 ? "critica" : "proxima",
     });
   }
