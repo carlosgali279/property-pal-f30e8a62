@@ -3,6 +3,7 @@ import { ArrowLeft, Building2, FileSpreadsheet, FileText, Mail, MapPin, Phone } 
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { AlertList } from "@/components/AlertList";
+import { ArrendatarioSection } from "@/components/ArrendatarioSection";
 import { DocumentosSection } from "@/components/DocumentosSection";
 import { FinanzasSection } from "@/components/FinanzasSection";
 import { EstadoBadge } from "@/components/EstadoBadge";
@@ -170,6 +171,12 @@ function PredioDetalle() {
           )}
         </Card>
       </div>
+
+      {predio.tipoPredio === "comercial" && (
+        <div className="mt-5">
+          <ArrendatarioSection predio={predio} />
+        </div>
+      )}
 
       <Tabs defaultValue="documentos" className="mt-8">
         <TabsList>
