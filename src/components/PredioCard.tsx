@@ -20,20 +20,18 @@ export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: numb
     <Link
       to="/predio/$predioId"
       params={{ predioId: predio.id }}
-      className="group block rise-in rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      style={{ animationDelay: `${Math.min(index, 8) * 55}ms` }}
+      className="group block rise-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
     >
-      <Card className="card-elevated h-full gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 group-hover:-translate-y-1 group-hover:border-primary/25">
-        <div className="relative h-24 overflow-hidden border-b border-border bg-secondary">
-          <div className="absolute inset-0 bg-[linear-gradient(115deg,color-mix(in_oklab,var(--color-primary)_16%,transparent),transparent_62%)]" />
-          <div
-            className="absolute inset-0 opacity-[0.55]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(135deg, color-mix(in oklab, var(--color-primary) 8%, transparent) 0 1px, transparent 1px 11px)",
-            }}
-          />
-          <div className="absolute inset-x-5 bottom-4 flex items-end justify-between gap-3">
+      <Card className="card-elevated relative h-full gap-0 overflow-hidden rounded-none border-border bg-card p-0 group-hover:border-primary">
+        <span
+          aria-hidden
+          className={`absolute inset-y-0 left-0 w-1.5 ${
+            predio.tipoPredio === "comercial" ? "bg-primary" : "bg-neutral"
+          }`}
+        />
+        <div className="border-b border-border bg-muted pl-7 pr-5 py-4">
+          <div className="flex items-end justify-between gap-3">
             <div className="min-w-0">
               <p className="label-eyebrow">{predio.razonSocial}</p>
               <h3 className="truncate font-display text-xl leading-tight text-foreground">{predio.nombre}</h3>
@@ -45,18 +43,18 @@ export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: numb
           </div>
         </div>
 
-        <div className="px-5 pt-4">
+        <div className="pl-7 pr-5 pt-4">
           <p className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
             <MapPin className="size-3.5 shrink-0" />
             {predio.direccion}, {predio.ciudad}
           </p>
         </div>
 
-        <div className="space-y-2.5 px-5 py-4">
+        <div className="space-y-2.5 pl-7 pr-5 py-4">
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1.5 font-medium">
               {completo ? (
-                <CheckCircle2 className="size-4 text-success" />
+                <CheckCircle2 className="size-4 text-primary" />
               ) : (
                 <AlertTriangle className="size-4 text-warning" />
               )}
@@ -70,15 +68,15 @@ export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: numb
           )}
         </div>
 
-        <div className="mx-5 grid grid-cols-2 gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm">
-          <div>
+        <div className="ledger-grid mx-5 grid-cols-2 text-sm">
+          <div className="ledger-cell">
             <p className="label-eyebrow">Ingresos 6m</p>
-            <p className="mt-0.5 flex items-center gap-1 font-semibold tabular-nums text-success">
+            <p className="mt-0.5 flex items-center gap-1 font-semibold tabular-nums text-primary">
               <TrendingUp className="size-3.5" />
               {fmtCOP(bal.ingresos)}
             </p>
           </div>
-          <div>
+          <div className="ledger-cell">
             <p className="label-eyebrow">Gastos 6m</p>
             <p className="mt-0.5 flex items-center gap-1 font-semibold tabular-nums text-destructive">
               <TrendingDown className="size-3.5" />
@@ -87,12 +85,12 @@ export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: numb
           </div>
         </div>
 
-        <div className="mt-auto flex items-center gap-2 px-5 pb-4 pt-4 text-xs text-muted-foreground">
+        <div className="mt-auto flex items-center gap-2 pl-7 pr-5 pb-4 pt-4 text-xs text-muted-foreground">
           <Users className="size-3.5 shrink-0" />
           <span className="truncate">
             {predio.contactos.map((c) => contactoById(c.contactoId)?.nombre).filter(Boolean).join(" · ")}
           </span>
-          <span className="ml-auto flex items-center gap-1 whitespace-nowrap font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="ml-auto flex items-center gap-1 whitespace-nowrap font-semibold uppercase tracking-[0.08em] text-primary opacity-0 transition-opacity group-hover:opacity-100">
             Ver detalle <ArrowUpRight className="size-3.5" />
           </span>
         </div>
