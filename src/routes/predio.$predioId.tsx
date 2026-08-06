@@ -50,7 +50,7 @@ function PredioDetalle() {
             Este predio no existe o no está asociado a {viewerLabel}.
           </p>
           <Button asChild className="mt-6">
-            <Link to="/">Volver al listado</Link>
+            <Link to="/predios">Volver al listado</Link>
           </Button>
         </Card>
       </AppShell>
@@ -66,7 +66,7 @@ function PredioDetalle() {
 
   return (
     <AppShell>
-      <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <Link to="/predios" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> Todos los predios
       </Link>
 
