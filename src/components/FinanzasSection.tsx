@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { CATEGORIAS_GASTO, CATEGORIAS_INGRESO, type Predio, type TipoMovimiento } from "@/lib/mock-data";
+import { CATEGORIAS_GASTO, categoriasIngreso, type Predio, type TipoMovimiento } from "@/lib/mock-data";
 import { balance, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
@@ -32,9 +32,13 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl">Seguimiento financiero</h2>
-          <p className="text-sm text-muted-foreground">Últimos movimientos registrados de ingresos y gastos</p>
+          <p className="text-sm text-muted-foreground">
+            {predio.tipoPredio === "comercial"
+              ? "Últimos movimientos registrados de ingresos y gastos"
+              : "Predio no arrendado: el seguimiento se centra en los gastos (mantenimiento, impuestos, servicios y otros)"}
+          </p>
         </div>
-        {isAdmin && <MovimientoDialog predioId={predio.id} />}
+        {isAdmin && <MovimientoDialog predio={predio} />}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -155,15 +159,18 @@ function Total({ label, value, tone }: { label: string; value: number; tone?: "s
   );
 }
 
-function MovimientoDialog({ predioId }: { predioId: string }) {
+function MovimientoDialog({ predio }: { predio: Predio }) {
   const { addMovimiento } = useStore();
+  const predioId = predio.id;
+  const esComercial = predio.tipoPredio === "comercial";
+  const ingresos = categoriasIngreso(predio.tipoPredio);
   const [open, setOpen] = useState(false);
-  const [tipo, setTipo] = useState<TipoMovimiento>("ingreso");
-  const [categoria, setCategoria] = useState<string>(CATEGORIAS_INGRESO[0]!);
+  const [tipo, setTipo] = useState<TipoMovimiento>(esComercial ? "ingreso" : "gasto");
+  const [categoria, setCategoria] = useState<string>((esComercial ? ingresos : CATEGORIAS_GASTO)[0]!);
   const [monto, setMonto] = useState("");
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   const [nota, setNota] = useState("");
-  const categorias = tipo === "ingreso" ? CATEGORIAS_INGRESO : CATEGORIAS_GASTO;
+  const categorias = tipo === "ingreso" ? ingresos : CATEGORIAS_GASTO;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -185,14 +192,14 @@ function MovimientoDialog({ predioId }: { predioId: string }) {
                 onValueChange={(v) => {
                   const t = v as TipoMovimiento;
                   setTipo(t);
-                  setCategoria((t === "ingreso" ? CATEGORIAS_INGRESO : CATEGORIAS_GASTO)[0]!);
+                  setCategoria((t === "ingreso" ? ingresos : CATEGORIAS_GASTO)[0]!);
                 }}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ingreso">Ingreso</SelectItem>
+                  {esComercial && <SelectItem value="ingreso">Ingreso</SelectItem>}
                   <SelectItem value="gasto">Gasto</SelectItem>
                 </SelectContent>
               </Select>

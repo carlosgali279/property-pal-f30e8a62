@@ -6,6 +6,7 @@ import { AlertList } from "@/components/AlertList";
 import { DocumentosSection } from "@/components/DocumentosSection";
 import { FinanzasSection } from "@/components/FinanzasSection";
 import { EstadoBadge } from "@/components/EstadoBadge";
+import { TipoPredioBadge } from "@/components/TipoPredioBadge";
 import { NuevoPredioDialog } from "@/components/NuevoPredioDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportarExcel, exportarPDF } from "@/lib/reports";
 import { alertas, completitud } from "@/lib/selectors";
+import { tiposAplicables } from "@/lib/mock-data";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/predio/$predioId")({
@@ -56,11 +58,12 @@ function PredioDetalle() {
     );
   }
 
-  const comp = completitud(documentos, predio.id, tiposDocumento);
+  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const comp = completitud(documentos, predio.id, tipos);
   const pct = Math.round((comp.cargados / comp.total) * 100);
   const alertasPredio = alertas(documentos, [predio], 90);
 
-  const reportInput = { predio, documentos, movimientos, tipos: tiposDocumento, contactoById };
+  const reportInput = { predio, documentos, movimientos, tipos, contactoById };
 
   return (
     <AppShell>
@@ -73,6 +76,7 @@ function PredioDetalle() {
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl">{predio.nombre}</h1>
             <EstadoBadge estado={predio.estado} />
+            <TipoPredioBadge tipo={predio.tipoPredio} full />
           </div>
           <p className="mt-2 flex flex-wrap items-center gap-x-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">

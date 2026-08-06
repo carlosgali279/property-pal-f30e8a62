@@ -3,13 +3,15 @@ import { AlertTriangle, ArrowUpRight, CheckCircle2, MapPin, TrendingDown, Trendi
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { EstadoBadge } from "@/components/EstadoBadge";
-import type { Predio } from "@/lib/mock-data";
+import { TipoPredioBadge } from "@/components/TipoPredioBadge";
+import { tiposAplicables, type Predio } from "@/lib/mock-data";
 import { balance, completitud, fmtCOP } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: number }) {
   const { documentos, movimientos, tiposDocumento, contactoById } = useStore();
-  const comp = completitud(documentos, predio.id, tiposDocumento);
+  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const comp = completitud(documentos, predio.id, tipos);
   const bal = balance(movimientos, predio.id);
   const pct = Math.round((comp.cargados / comp.total) * 100);
   const completo = comp.cargados === comp.total;
@@ -36,7 +38,10 @@ export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: numb
               <p className="label-eyebrow">{predio.razonSocial}</p>
               <h3 className="truncate font-display text-xl leading-tight text-foreground">{predio.nombre}</h3>
             </div>
-            <EstadoBadge estado={predio.estado} />
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <EstadoBadge estado={predio.estado} />
+              <TipoPredioBadge tipo={predio.tipoPredio} />
+            </div>
           </div>
         </div>
 
