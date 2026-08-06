@@ -65,6 +65,38 @@ export interface Movimiento {
   nota?: string;
 }
 
+export type RolArrendatarioContacto =
+  | "representante_legal"
+  | "administrativo"
+  | "pagos"
+  | "mantenimiento"
+  | "sitio";
+
+export const ROLES_ARRENDATARIO: { value: RolArrendatarioContacto; label: string }[] = [
+  { value: "representante_legal", label: "Representante legal" },
+  { value: "administrativo", label: "Administrativo / legal" },
+  { value: "pagos", label: "Pagos y facturación" },
+  { value: "mantenimiento", label: "Mantenimiento" },
+  { value: "sitio", label: "Contacto en sitio" },
+];
+
+export interface ContactoArrendatario {
+  id: string;
+  nombre: string;
+  rol: RolArrendatarioContacto;
+  cargo: string;
+  email: string;
+  telefono: string;
+  nota?: string;
+}
+
+export interface Arrendatario {
+  nombre: string;
+  nit: string;
+  desde: string;
+  contactos: ContactoArrendatario[];
+}
+
 export interface Predio {
   id: string;
   nombre: string;
@@ -74,6 +106,8 @@ export interface Predio {
   estado: EstadoPredio;
   tipoPredio: TipoPredio;
   contactos: VinculoContacto[];
+  /** Solo aplica a predios comerciales (arrendados). */
+  arrendatario?: Arrendatario;
 }
 
 export const TIPOS_DOCUMENTO_INICIALES = [
@@ -118,6 +152,16 @@ export const predios: Predio[] = [
       { contactoId: "c1", rol: "propietario_principal", participacion: 60 },
       { contactoId: "c2", rol: "socio", participacion: 40 },
     ],
+    arrendatario: {
+      nombre: "Logística Sur S.A.S.",
+      nit: "900.412.887-4",
+      desde: "2024-02-01",
+      contactos: [
+        { id: "a1", nombre: "Diego Ospina", rol: "representante_legal", cargo: "Gerente general", email: "d.ospina@logisticasur.co", telefono: "+57 604 511 8890", nota: "Firma contratos y otrosí." },
+        { id: "a2", nombre: "Paula Betancur", rol: "pagos", cargo: "Jefe de tesorería", email: "pagos@logisticasur.co", telefono: "+57 318 220 7741", nota: "Radicación de facturas antes del día 5." },
+        { id: "a3", nombre: "Héctor Ruiz", rol: "mantenimiento", cargo: "Coordinador de planta", email: "h.ruiz@logisticasur.co", telefono: "+57 312 664 0125", nota: "Autoriza ingreso de técnicos." },
+      ],
+    },
   },
   {
     id: "p2",
@@ -128,6 +172,15 @@ export const predios: Predio[] = [
     estado: "arrendado",
     tipoPredio: "comercial",
     contactos: [{ contactoId: "c2", rol: "propietario_principal", participacion: 100 }],
+    arrendatario: {
+      nombre: "Café de Origen Ltda.",
+      nit: "901.220.554-1",
+      desde: "2023-09-01",
+      contactos: [
+        { id: "a4", nombre: "Sara Molina", rol: "representante_legal", cargo: "Socia fundadora", email: "sara@cafedeorigen.co", telefono: "+57 300 774 5512" },
+        { id: "a5", nombre: "Andrés Gil", rol: "sitio", cargo: "Administrador del local", email: "local.poblado@cafedeorigen.co", telefono: "+57 311 908 3320", nota: "Contacto para novedades diarias." },
+      ],
+    },
   },
   {
     id: "p3",
@@ -154,6 +207,15 @@ export const predios: Predio[] = [
       { contactoId: "c1", rol: "propietario_principal", participacion: 50 },
       { contactoId: "c5", rol: "socio", participacion: 50 },
     ],
+    arrendatario: {
+      nombre: "Consultora Meridiano S.A.S.",
+      nit: "900.885.113-7",
+      desde: "2024-07-01",
+      contactos: [
+        { id: "a6", nombre: "Camila Torres", rol: "administrativo", cargo: "Directora administrativa", email: "c.torres@meridiano.co", telefono: "+57 601 745 2200", nota: "Interlocutora para renovación." },
+        { id: "a7", nombre: "Julián Mesa", rol: "pagos", cargo: "Analista contable", email: "facturacion@meridiano.co", telefono: "+57 320 551 9987" },
+      ],
+    },
   },
   {
     id: "p5",
@@ -177,6 +239,17 @@ export const predios: Predio[] = [
       { contactoId: "c4", rol: "propietario_principal", participacion: 80 },
       { contactoId: "c1", rol: "socio", participacion: 20 },
     ],
+    arrendatario: {
+      nombre: "Distribuciones Andes S.A."
+,      nit: "890.331.442-2",
+      desde: "2023-01-15",
+      contactos: [
+        { id: "a8", nombre: "Ricardo Peláez", rol: "representante_legal", cargo: "Director de operaciones", email: "r.pelaez@distandes.com", telefono: "+57 604 210 7788" },
+        { id: "a9", nombre: "Natalia Arango", rol: "administrativo", cargo: "Abogada interna", email: "juridica@distandes.com", telefono: "+57 314 002 6612", nota: "Maneja otrosí y pólizas." },
+        { id: "a10", nombre: "Fabián Cortés", rol: "mantenimiento", cargo: "Jefe de bodega", email: "bodega7@distandes.com", telefono: "+57 313 447 5590" },
+        { id: "a11", nombre: "Mónica Zapata", rol: "pagos", cargo: "Tesorería", email: "tesoreria@distandes.com", telefono: "+57 604 210 7790" },
+      ],
+    },
   },
   {
     id: "p7",
@@ -200,6 +273,15 @@ export const predios: Predio[] = [
       { contactoId: "c2", rol: "propietario_principal", participacion: 55 },
       { contactoId: "c3", rol: "socio", participacion: 45 },
     ],
+    arrendatario: {
+      nombre: "Moda Urbana S.A.S.",
+      nit: "901.556.201-9",
+      desde: "2024-11-01",
+      contactos: [
+        { id: "a12", nombre: "Esteban Villa", rol: "representante_legal", cargo: "Gerente comercial", email: "e.villa@modaurbana.co", telefono: "+57 607 655 3311" },
+        { id: "a13", nombre: "Yenny Duarte", rol: "sitio", cargo: "Jefe de tienda", email: "local12@modaurbana.co", telefono: "+57 317 220 4478", nota: "Reporta daños del local." },
+      ],
+    },
   },
 ];
 
