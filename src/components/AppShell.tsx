@@ -72,7 +72,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       key={item.to}
                       to={item.to}
                       onClick={() => setOpen(false)}
-                      activeOptions={item.exact ? { exact: true } : undefined}
+                      activeOptions={{ exact: item.exact === true }}
                       className="flex items-center gap-3 border-b border-border px-5 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground data-[status=active]:bg-muted data-[status=active]:text-foreground"
                     >
                       {item.icon}
