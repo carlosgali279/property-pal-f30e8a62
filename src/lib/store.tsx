@@ -2,11 +2,13 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 import {
   contactos as contactosMock,
   documentos as documentosMock,
+  impuestos as impuestosMock,
   movimientos as movimientosMock,
   predios as prediosMock,
   TIPOS_DOCUMENTO_INICIALES,
   type Contacto,
   type Documento,
+  type Impuesto,
   type Movimiento,
   type Predio,
 } from "./mock-data";
@@ -25,11 +27,15 @@ interface Store {
   visiblePredios: Predio[];
   documentos: Documento[];
   movimientos: Movimiento[];
+  impuestos: Impuesto[];
   upsertPredio: (p: Predio) => void;
   subirDocumento: (d: Omit<Documento, "id">) => void;
   eliminarDocumento: (id: string) => void;
   addMovimiento: (m: Omit<Movimiento, "id">) => void;
   eliminarMovimiento: (id: string) => void;
+  addImpuesto: (i: Omit<Impuesto, "id">) => void;
+  actualizarImpuesto: (id: string, cambios: Partial<Impuesto>) => void;
+  eliminarImpuesto: (id: string) => void;
   contactoById: (id: string) => Contacto | undefined;
 }
 
@@ -43,6 +49,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [predios, setPredios] = useState<Predio[]>(prediosMock);
   const [documentos, setDocumentos] = useState<Documento[]>(documentosMock);
   const [movimientos, setMovimientos] = useState<Movimiento[]>(movimientosMock);
+  const [impuestos, setImpuestos] = useState<Impuesto[]>(impuestosMock);
   const [tiposDocumento, setTiposDocumento] = useState<string[]>(TIPOS_DOCUMENTO_INICIALES);
 
   const value = useMemo<Store>(() => {
@@ -64,6 +71,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       visiblePredios,
       documentos,
       movimientos,
+      impuestos,
       upsertPredio: (p) =>
         setPredios((prev) => (prev.some((x) => x.id === p.id) ? prev.map((x) => (x.id === p.id ? p : x)) : [...prev, p])),
       subirDocumento: (d) =>
@@ -74,9 +82,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       eliminarDocumento: (id) => setDocumentos((prev) => prev.filter((x) => x.id !== id)),
       addMovimiento: (m) => setMovimientos((prev) => [...prev, { ...m, id: nextId("m") }]),
       eliminarMovimiento: (id) => setMovimientos((prev) => prev.filter((x) => x.id !== id)),
+      addImpuesto: (i) => setImpuestos((prev) => [...prev, { ...i, id: nextId("i") }]),
+      actualizarImpuesto: (id, cambios) =>
+        setImpuestos((prev) => prev.map((x) => (x.id === id ? { ...x, ...cambios } : x))),
+      eliminarImpuesto: (id) => setImpuestos((prev) => prev.filter((x) => x.id !== id)),
       contactoById,
     };
-  }, [viewer, predios, documentos, movimientos, tiposDocumento]);
+  }, [viewer, predios, documentos, movimientos, impuestos, tiposDocumento]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
