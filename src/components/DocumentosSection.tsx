@@ -13,16 +13,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { tiposAplicables, type Predio } from "@/lib/mock-data";
+import type { Predio } from "@/lib/mock-data";
 import { diasHasta, fmtFecha } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export function DocumentosSection({ predio }: { predio: Predio }) {
-  const { documentos, tiposDocumento, isAdmin, subirDocumento, eliminarDocumento, addTipoDocumento } = useStore();
+  const { documentos, tiposPara, isAdmin, subirDocumento, eliminarDocumento, addTipoDocumento } = useStore();
   const [tipoActivo, setTipoActivo] = useState<string | null>(null);
   const [nuevoTipo, setNuevoTipo] = useState("");
   const [openTipo, setOpenTipo] = useState(false);
-  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const tipos = tiposPara(predio.tipoPredio);
   const docs = documentos.filter((d) => d.predioId === predio.id && tipos.includes(d.tipo));
 
   return (

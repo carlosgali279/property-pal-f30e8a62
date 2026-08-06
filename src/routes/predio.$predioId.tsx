@@ -16,7 +16,6 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportarExcel, exportarPDF } from "@/lib/reports";
 import { alertas, alertasImpuestos } from "@/lib/selectors";
-import { tiposAplicables } from "@/lib/mock-data";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/predio/$predioId")({
@@ -40,8 +39,9 @@ export const Route = createFileRoute("/predio/$predioId")({
 
 function PredioDetalle() {
   const { predioId } = Route.useParams();
-  const { visiblePredios, documentos, movimientos, impuestos, tiposDocumento, contactoById, isAdmin, viewerLabel } =
+  const { visiblePredios, documentos, movimientos, impuestos, tiposPara, contactoById, isAdmin, viewerLabel, ventanaAlertas } =
     useStore();
+
   const predio = visiblePredios.find((p) => p.id === predioId);
 
   if (!predio) {
@@ -60,9 +60,9 @@ function PredioDetalle() {
     );
   }
 
-  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const tipos = tiposPara(predio.tipoPredio);
   const alertasPredio = predio
-    ? [...alertas(documentos, [predio], 90), ...alertasImpuestos(impuestos, [predio], 90)].sort((a, b) => a.dias - b.dias)
+    ? [...alertas(documentos, [predio], ventanaAlertas * 3), ...alertasImpuestos(impuestos, [predio], ventanaAlertas * 3)].sort((a, b) => a.dias - b.dias)
     : [];
 
   const reportInput = { predio, documentos, movimientos, tipos, contactoById };

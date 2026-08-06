@@ -23,8 +23,8 @@ export const Route = createFileRoute("/alertas")({
 });
 
 function AlertasPage() {
-  const { documentos, impuestos, visiblePredios, isAdmin, viewerLabel } = useStore();
-  const items = [...alertas(documentos, visiblePredios, 90), ...alertasImpuestos(impuestos, visiblePredios, 90)].sort(
+  const { documentos, impuestos, visiblePredios, isAdmin, viewerLabel, ventanaAlertas } = useStore();
+  const items = [...alertas(documentos, visiblePredios, ventanaAlertas * 3), ...alertasImpuestos(impuestos, visiblePredios, ventanaAlertas * 3)].sort(
     (a, b) => a.dias - b.dias,
   );
   const vencidos = items.filter((a) => a.dias < 0);

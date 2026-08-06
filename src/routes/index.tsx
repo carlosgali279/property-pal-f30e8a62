@@ -6,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { TIPOS_PREDIO, tiposAplicables } from "@/lib/mock-data";
+import { TIPOS_PREDIO } from "@/lib/mock-data";
 import { alertas, alertasImpuestos, balance, completitud, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
@@ -30,21 +30,22 @@ export const Route = createFileRoute("/")({
 });
 
 function DashboardPage() {
-  const { visiblePredios, documentos, movimientos, impuestos, tiposDocumento, isAdmin, viewerLabel } = useStore();
+  const { visiblePredios, documentos, movimientos, impuestos, tiposPara, isAdmin, viewerLabel, ventanaAlertas } =
+    useStore();
 
   const movsVisibles = movimientos.filter((m) => visiblePredios.some((p) => p.id === m.predioId));
   const bal = balance(movsVisibles);
   const serie = seriePorMes(movsVisibles);
 
   const incompletos = visiblePredios.filter((p) => {
-    const tipos = tiposAplicables(tiposDocumento, p.tipoPredio);
+    const tipos = tiposPara(p.tipoPredio);
     return completitud(documentos, p.id, tipos).cargados < tipos.length;
   }).length;
 
-  const items = [...alertas(documentos, visiblePredios, 90), ...alertasImpuestos(impuestos, visiblePredios, 90)].sort(
+  const items = [...alertas(documentos, visiblePredios, ventanaAlertas * 3), ...alertasImpuestos(impuestos, visiblePredios, ventanaAlertas * 3)].sort(
     (a, b) => a.dias - b.dias,
   );
-  const alertasCount = items.filter((a) => a.dias <= 30).length;
+  const alertasCount = items.filter((a) => a.dias <= ventanaAlertas).length;
   // Los días se calculan con la fecha actual: solo mostramos el banner tras hidratar.
   const [hidratado, setHidratado] = useState(false);
   useEffect(() => setHidratado(true), []);
@@ -55,7 +56,7 @@ function DashboardPage() {
     let cargados = 0;
     let total = 0;
     for (const p of lista) {
-      const tipos = tiposAplicables(tiposDocumento, p.tipoPredio);
+      const tipos = tiposPara(p.tipoPredio);
       const c = completitud(documentos, p.id, tipos);
       cargados += c.cargados;
       total += tipos.length;

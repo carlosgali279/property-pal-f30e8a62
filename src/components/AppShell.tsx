@@ -19,9 +19,9 @@ import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { viewer, setViewer, contactos, isAdmin, documentos, visiblePredios } = useStore();
+  const { viewer, setViewer, contactos, isAdmin, documentos, visiblePredios, ventanaAlertas } = useStore();
   const [open, setOpen] = useState(false);
-  const pendientes = alertas(documentos, visiblePredios).length;
+  const pendientes = alertas(documentos, visiblePredios, ventanaAlertas).length;
 
   const value = viewer.kind === "admin" ? "admin" : `prop:${viewer.contactoId}`;
 

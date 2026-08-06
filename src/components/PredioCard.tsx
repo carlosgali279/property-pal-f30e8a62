@@ -4,13 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { EstadoBadge } from "@/components/EstadoBadge";
 import { TipoPredioBadge } from "@/components/TipoPredioBadge";
-import { tiposAplicables, type Predio } from "@/lib/mock-data";
+import type { Predio } from "@/lib/mock-data";
 import { balance, completitud, fmtCOP } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
 export function PredioCard({ predio, index = 0 }: { predio: Predio; index?: number }) {
-  const { documentos, movimientos, tiposDocumento, contactoById } = useStore();
-  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const { documentos, movimientos, tiposPara, contactoById } = useStore();
+  const tipos = tiposPara(predio.tipoPredio);
   const comp = completitud(documentos, predio.id, tipos);
   const bal = balance(movimientos, predio.id);
   const pct = Math.round((comp.cargados / comp.total) * 100);
