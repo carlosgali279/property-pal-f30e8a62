@@ -66,23 +66,25 @@
   --color-surface: var(--surface);
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
-  --shadow-card: 0 1px 2px oklch(0.28 0.05 172 / 0.06), 0 8px 24px -12px oklch(0.28 0.05 172 / 0.18);
+  --shadow-card: 0 1px 2px oklch(0.28 0.05 172 / 0.05), 0 10px 30px -18px oklch(0.28 0.05 172 / 0.22);
+  --shadow-card-hover: 0 2px 4px oklch(0.28 0.05 172 / 0.07), 0 22px 48px -22px oklch(0.28 0.05 172 / 0.3);
+  --shadow-inset-hairline: inset 0 1px 0 oklch(1 0 0 / 0.7);
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.985 0.008 130);
+  --radius: 0.75rem;
+  --background: oklch(0.972 0.012 95);
   --foreground: oklch(0.245 0.03 168);
-  --surface: oklch(0.995 0.004 130);
+  --surface: oklch(0.99 0.006 95);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.245 0.03 168);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.245 0.03 168);
   --primary: oklch(0.42 0.077 172);
   --primary-foreground: oklch(0.985 0.01 130);
-  --secondary: oklch(0.945 0.018 140);
+  --secondary: oklch(0.944 0.021 100);
   --secondary-foreground: oklch(0.32 0.045 170);
-  --muted: oklch(0.955 0.012 140);
+  --muted: oklch(0.955 0.016 95);
   --muted-foreground: oklch(0.52 0.025 168);
   --accent: oklch(0.83 0.115 78);
   --accent-foreground: oklch(0.27 0.045 60);
@@ -92,8 +94,8 @@
   --success-foreground: oklch(0.99 0.005 130);
   --warning: oklch(0.75 0.145 68);
   --warning-foreground: oklch(0.26 0.05 60);
-  --border: oklch(0.9 0.015 155);
-  --input: oklch(0.9 0.015 155);
+  --border: oklch(0.898 0.019 95);
+  --input: oklch(0.898 0.019 95);
   --ring: oklch(0.42 0.077 172);
   --chart-1: oklch(0.45 0.09 172);
   --chart-2: oklch(0.72 0.13 68);
@@ -169,3 +171,35 @@
   }
 }
 
+
+@utility card-elevated {
+  box-shadow: var(--shadow-card), var(--shadow-inset-hairline);
+  transition: box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1), transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover), var(--shadow-inset-hairline);
+  }
+}
+
+@utility label-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility rise-in {
+  animation: rise-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
