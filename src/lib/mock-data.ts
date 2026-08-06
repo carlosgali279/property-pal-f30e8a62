@@ -429,3 +429,107 @@ export const movimientos: Movimiento[] = (() => {
   }
   return out;
 })();
+
+/* ── Impuestos ─────────────────────────────────────────────────────────── */
+
+export const TIPOS_IMPUESTO = [
+  "Impuesto predial",
+  "Valorización",
+  "Industria y comercio",
+  "Sobretasa ambiental",
+  "Otro impuesto",
+];
+
+export interface Impuesto {
+  id: string;
+  predioId: string;
+  tipo: string;
+  periodo: string;
+  monto: number;
+  /** Fecha tentativa de pago: dispara la notificación. */
+  fechaLimite: string;
+  /** Recibo cargado (carga simulada). */
+  archivo?: string;
+  fechaCarga?: string;
+  pagado: boolean;
+  fechaPago?: string;
+  nota?: string;
+}
+
+const anioActual = String(hoy.getFullYear());
+
+export const impuestos: Impuesto[] = [
+  {
+    id: "i1",
+    predioId: "p1",
+    tipo: "Impuesto predial",
+    periodo: anioActual,
+    monto: 4_820_000,
+    fechaLimite: enDias(18),
+    archivo: "recibo-predial-guayabal42.pdf",
+    fechaCarga: enDias(-25),
+    pagado: false,
+    nota: "Descuento por pronto pago hasta la fecha límite.",
+  },
+  {
+    id: "i2",
+    predioId: "p1",
+    tipo: "Valorización",
+    periodo: anioActual,
+    monto: 1_150_000,
+    fechaLimite: enDias(62),
+    pagado: false,
+  },
+  {
+    id: "i3",
+    predioId: "p2",
+    tipo: "Impuesto predial",
+    periodo: anioActual,
+    monto: 2_340_000,
+    fechaLimite: enDias(-6),
+    archivo: "recibo-predial-poblado.pdf",
+    fechaCarga: enDias(-40),
+    pagado: false,
+  },
+  {
+    id: "i4",
+    predioId: "p3",
+    tipo: "Impuesto predial",
+    periodo: anioActual,
+    monto: 3_110_000,
+    fechaLimite: enDias(41),
+    pagado: false,
+  },
+  {
+    id: "i5",
+    predioId: "p4",
+    tipo: "Impuesto predial",
+    periodo: anioActual,
+    monto: 1_890_000,
+    fechaLimite: enDias(-120),
+    archivo: "recibo-predial-nogal804.pdf",
+    fechaCarga: enDias(-150),
+    pagado: true,
+    fechaPago: enDias(-118),
+  },
+  {
+    id: "i6",
+    predioId: "p5",
+    tipo: "Impuesto predial",
+    periodo: anioActual,
+    monto: 980_000,
+    fechaLimite: enDias(9),
+    pagado: false,
+  },
+  {
+    id: "i7",
+    predioId: "p6",
+    tipo: "Industria y comercio",
+    periodo: anioActual,
+    monto: 2_050_000,
+    fechaLimite: enDias(27),
+    archivo: "recibo-ica-zonafranca.pdf",
+    fechaCarga: enDias(-12),
+    pagado: false,
+  },
+];
