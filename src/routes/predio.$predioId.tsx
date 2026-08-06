@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Building2, FileSpreadsheet, FileText, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowLeft, Building2, FileSpreadsheet, FileText, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { AlertList } from "@/components/AlertList";
@@ -12,10 +12,9 @@ import { TipoPredioBadge } from "@/components/TipoPredioBadge";
 import { NuevoPredioDialog } from "@/components/NuevoPredioDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportarExcel, exportarPDF } from "@/lib/reports";
-import { alertas, completitud } from "@/lib/selectors";
+import { alertas } from "@/lib/selectors";
 import { tiposAplicables } from "@/lib/mock-data";
 import { useStore } from "@/lib/store";
 
@@ -60,8 +59,6 @@ function PredioDetalle() {
   }
 
   const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
-  const comp = completitud(documentos, predio.id, tipos);
-  const pct = Math.round((comp.cargados / comp.total) * 100);
   const alertasPredio = alertas(documentos, [predio], 90);
 
   const reportInput = { predio, documentos, movimientos, tipos, contactoById };
