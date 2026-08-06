@@ -4,7 +4,6 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, ResponsiveContainer, Toolti
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -41,19 +40,19 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
         {isAdmin && <MovimientoDialog predio={predio} />}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="ledger-grid sm:grid-cols-3">
         <Total label="Ingresos" value={bal.ingresos} tone="success" />
         <Total label="Gastos" value={bal.gastos} tone="destructive" />
         <Total label="Balance neto" value={bal.neto} />
       </div>
 
       <Card className="border-border p-5">
-        <p className="text-sm font-medium">Balance por periodo</p>
+        <p className="label-eyebrow">Balance por periodo</p>
         <div className="mt-4 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={serie}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-              <XAxis dataKey="mes" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="mes" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={{ stroke: "var(--border)" }} />
               <YAxis
                 stroke="var(--muted-foreground)"
                 fontSize={12}
@@ -64,21 +63,22 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
               <Tooltip
                 formatter={(v) => fmtCOP(Number(v))}
                 contentStyle={{
-                  background: "var(--card)",
+                  background: "var(--surface)",
                   border: "1px solid var(--border)",
-                  borderRadius: 8,
+                  borderRadius: 0,
                   color: "var(--foreground)",
                   fontSize: 12,
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar name="Ingresos" dataKey="ingresos" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-              <Bar name="Gastos" dataKey="gastos" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-              <Line name="Neto" type="monotone" dataKey="neto" stroke="var(--chart-5)" strokeWidth={2} dot={false} />
+              <Bar name="Ingresos" dataKey="ingresos" fill="var(--chart-1)" radius={0} />
+              <Bar name="Gastos" dataKey="gastos" fill="var(--chart-2)" radius={0} />
+              <Line name="Neto" type="linear" dataKey="neto" stroke="var(--chart-5)" strokeWidth={1.5} dot={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
+
 
       <Card className="overflow-hidden border-border p-0">
         <Table>
@@ -97,24 +97,26 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
               .sort((a, b) => b.fecha.localeCompare(a.fecha))
               .map((m) => (
                 <TableRow key={m.id}>
-                  <TableCell className="whitespace-nowrap">{fmtFecha(m.fecha)}</TableCell>
+                  <TableCell className="whitespace-nowrap tabular-nums">{fmtFecha(m.fecha)}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
+                    <span
+                      className={`stamp ${
                         m.tipo === "ingreso"
-                          ? "border-success/25 bg-success/12 text-success"
-                          : "border-destructive/25 bg-destructive/10 text-destructive"
-                      }
+                          ? "bg-primary-soft text-primary"
+                          : "bg-destructive-soft text-destructive"
+                      }`}
                     >
+                      <span className="stamp-dot" aria-hidden />
                       {m.tipo === "ingreso" ? "Ingreso" : "Gasto"}
-                    </Badge>
+                    </span>
                   </TableCell>
+
                   <TableCell>{m.categoria}</TableCell>
                   <TableCell className="text-muted-foreground">{m.nota ?? "—"}</TableCell>
                   <TableCell
-                    className={`text-right font-medium ${m.tipo === "ingreso" ? "text-success" : "text-destructive"}`}
+                    className={`text-right font-medium tabular-nums ${m.tipo === "ingreso" ? "text-primary" : "text-destructive"}`}
                   >
+
                     {m.tipo === "ingreso" ? "+" : "−"}
                     {fmtCOP(m.monto)}
                   </TableCell>
@@ -150,14 +152,15 @@ export function FinanzasSection({ predio }: { predio: Predio }) {
 }
 
 function Total({ label, value, tone }: { label: string; value: number; tone?: "success" | "destructive" }) {
-  const cls = tone === "success" ? "text-success" : tone === "destructive" ? "text-destructive" : "text-foreground";
+  const cls = tone === "success" ? "text-primary" : tone === "destructive" ? "text-destructive" : "text-foreground";
   return (
-    <Card className="gap-0 border-border p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={`mt-1.5 font-display text-2xl ${cls}`}>{fmtCOP(value)}</p>
-    </Card>
+    <div className="ledger-cell">
+      <p className="label-eyebrow">{label}</p>
+      <p className={`mt-1.5 font-display text-2xl tabular-nums ${cls}`}>{fmtCOP(value)}</p>
+    </div>
   );
 }
+
 
 function MovimientoDialog({ predio }: { predio: Predio }) {
   const { addMovimiento } = useStore();

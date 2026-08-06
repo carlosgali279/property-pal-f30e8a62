@@ -3,7 +3,6 @@ import { CheckCircle2, CircleDashed, FileText, Plus, Trash2, Upload } from "luci
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -47,14 +46,15 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
           const doc = docs.find((d) => d.tipo === tipo);
           const dias = doc?.contrato ? diasHasta(doc.contrato.fechaTerminacion) : null;
           return (
-            <Card key={tipo} className="flex flex-col gap-3 border-border p-4 sm:flex-row sm:items-center">
+            <Card key={tipo} className="relative flex flex-col gap-3 border-border p-4 pl-6 sm:flex-row sm:items-center">
               <span
-                className={`flex size-9 shrink-0 items-center justify-center rounded-md ${
-                  doc ? "bg-success/12 text-success" : "bg-muted text-muted-foreground"
-                }`}
-              >
+                aria-hidden
+                className={`absolute inset-y-0 left-0 w-1.5 ${doc ? "bg-primary" : "bg-destructive"}`}
+              />
+              <span className={doc ? "text-primary" : "text-destructive"}>
                 {doc ? <CheckCircle2 className="size-4" /> : <CircleDashed className="size-4" />}
               </span>
+
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{tipo}</p>
                 {doc ? (
@@ -77,9 +77,10 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 {dias !== null && dias <= 30 && (
-                  <Badge variant="outline" className="border-warning/40 bg-warning/15 text-warning-foreground">
+                  <span className="stamp bg-warning-soft text-warning-foreground">
+                    <span className="stamp-dot" aria-hidden />
                     {dias < 0 ? "Vencido" : `Vence en ${dias} días`}
-                  </Badge>
+                  </span>
                 )}
                 {isAdmin ? (
                   <>
@@ -101,10 +102,12 @@ export function DocumentosSection({ predio }: { predio: Predio }) {
                     )}
                   </>
                 ) : (
-                  <Badge variant="outline" className="bg-secondary text-secondary-foreground">
+                  <span className={`stamp ${doc ? "bg-primary-soft text-primary" : "bg-destructive-soft text-destructive"}`}>
+                    <span className="stamp-dot" aria-hidden />
                     {doc ? "Disponible" : "Pendiente"}
-                  </Badge>
+                  </span>
                 )}
+
               </div>
             </Card>
           );
