@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowRight, Building2, TrendingUp, Wallet } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -44,6 +45,9 @@ function DashboardPage() {
     (a, b) => a.dias - b.dias,
   );
   const alertasCount = items.filter((a) => a.dias <= 30).length;
+  // Los días se calculan con la fecha actual: solo mostramos el banner tras hidratar.
+  const [hidratado, setHidratado] = useState(false);
+  useEffect(() => setHidratado(true), []);
   const urgentes = items.slice(0, 4);
 
   const porTipo = TIPOS_PREDIO.map((t) => {
@@ -83,7 +87,7 @@ function DashboardPage() {
         <Kpi icon={<Wallet className="size-4" />} label="Balance neto 6m" value={fmtCOP(bal.neto)} />
       </div>
 
-      {alertasCount > 0 && (
+      {hidratado && alertasCount > 0 && (
         <div className="rise-in relative mt-5 flex flex-wrap items-center gap-4 border border-border bg-warning-soft p-4 pl-6">
           <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 bg-warning" />
           <AlertTriangle className="size-4 shrink-0 text-warning-foreground" />
