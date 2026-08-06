@@ -46,7 +46,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                   setViewer(v === "admin" ? { kind: "admin" } : { kind: "propietario", contactoId: v.slice(5) })
                 }
               >
-                <SelectTrigger className="w-[210px] bg-card">
+                <SelectTrigger className="w-[210px] bg-background">
+
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -76,15 +77,16 @@ function NavItem({ to, icon, label, count }: { to: string; icon: ReactNode; labe
     <Link
       to={to}
       activeOptions={{ exact: to === "/" }}
-      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground"
+      className="flex items-center gap-2 rounded-none border border-transparent px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-border data-[status=active]:bg-muted data-[status=active]:text-foreground"
     >
       {icon}
       {label}
       {count ? (
-        <span className="rounded-full bg-destructive px-1.5 text-[11px] font-semibold text-destructive-foreground">
+        <span className="border border-destructive/40 bg-destructive-soft px-1.5 text-[11px] font-bold tabular-nums text-destructive">
           {count}
         </span>
       ) : null}
     </Link>
   );
 }
+
