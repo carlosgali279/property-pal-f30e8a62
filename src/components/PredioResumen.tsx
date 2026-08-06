@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } fro
 import { Progress } from "@/components/ui/progress";
 import { EstadoBadge } from "@/components/EstadoBadge";
 import { TipoPredioBadge } from "@/components/TipoPredioBadge";
-import { tiposAplicables, type Predio } from "@/lib/mock-data";
+import type { Predio } from "@/lib/mock-data";
 import { alertas, balance, completitud, fmtCOP, fmtFecha, seriePorMes } from "@/lib/selectors";
 import { useStore } from "@/lib/store";
 
@@ -12,14 +12,14 @@ const compactCOP = (n: number) =>
   new Intl.NumberFormat("es-CO", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 
 export function PredioResumen({ predio }: { predio: Predio }) {
-  const { documentos, movimientos, tiposDocumento, contactoById } = useStore();
+  const { documentos, movimientos, tiposPara, contactoById, ventanaAlertas } = useStore();
 
-  const tipos = tiposAplicables(tiposDocumento, predio.tipoPredio);
+  const tipos = tiposPara(predio.tipoPredio);
   const comp = completitud(documentos, predio.id, tipos);
   const pct = comp.total === 0 ? 100 : Math.round((comp.cargados / comp.total) * 100);
   const bal = balance(movimientos, predio.id);
   const serie = seriePorMes(bal.list);
-  const alertasPredio = alertas(documentos, [predio], 90);
+  const alertasPredio = alertas(documentos, [predio], ventanaAlertas * 3);
   const proxima = alertasPredio[0];
 
   const salud =

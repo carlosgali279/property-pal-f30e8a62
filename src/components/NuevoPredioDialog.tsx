@@ -15,11 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ESTADOS, razonesSociales, TIPOS_PREDIO, type EstadoPredio, type Predio, type TipoPredio } from "@/lib/mock-data";
+import { ESTADOS, TIPOS_PREDIO, type EstadoPredio, type Predio, type TipoPredio } from "@/lib/mock-data";
 import { newPredioId, useStore } from "@/lib/store";
 
 export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
-  const { upsertPredio, contactos } = useStore();
+  const { upsertPredio, contactos, razonesSociales } = useStore();
   const [open, setOpen] = useState(false);
   const [nombre, setNombre] = useState(predio?.nombre ?? "");
   const [direccion, setDireccion] = useState(predio?.direccion ?? "");
