@@ -85,7 +85,7 @@ function Dashboard() {
         {isAdmin && <NuevoPredioDialog />}
       </div>
 
-      <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="ledger-grid mt-7 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={<Building2 className="size-4" />} label="Predios" value={String(visiblePredios.length)} />
         <Kpi
           icon={<AlertTriangle className="size-4" />}
@@ -98,20 +98,19 @@ function Dashboard() {
       </div>
 
       {alertasCount > 0 && (
-        <Card className="rise-in mt-5 flex flex-wrap items-center gap-4 rounded-2xl border-warning/40 bg-warning/10 p-4 shadow-none">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-warning/30 text-warning-foreground">
-            <AlertTriangle className="size-4" />
-          </span>
+        <div className="rise-in relative mt-5 flex flex-wrap items-center gap-4 border border-border bg-warning-soft p-4 pl-6">
+          <span aria-hidden className="absolute inset-y-0 left-0 w-1.5 bg-warning" />
+          <AlertTriangle className="size-4 shrink-0 text-warning-foreground" />
           <p className="text-sm text-warning-foreground">
             <span className="font-semibold">{alertasCount} contrato(s)</span> con vencimiento en los próximos 30 días.
           </p>
-          <Button asChild size="sm" variant="outline" className="ml-auto bg-card">
+          <Button asChild size="sm" variant="outline" className="ml-auto bg-surface">
             <Link to="/alertas">Ver alertas</Link>
           </Button>
-        </Card>
+        </div>
       )}
 
-      <Card className="sticky top-[4.25rem] z-20 mt-6 rounded-2xl border-border bg-surface/85 p-3 shadow-[var(--shadow-card)] backdrop-blur">
+      <div className="sticky top-[4.25rem] z-20 mt-6 border border-border bg-surface p-3">
         <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -119,7 +118,7 @@ function Dashboard() {
               placeholder="Buscar predio…"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="bg-card pl-9"
+              className="bg-background pl-9"
             />
           </div>
           <Filtro value={ciudad} onChange={setCiudad} placeholder="Ubicación" options={ciudades.map((c) => [c, c])} />
@@ -137,7 +136,7 @@ function Dashboard() {
             options={TIPOS_PREDIO.map((t) => [t.value, t.label] as [string, string])}
           />
         </div>
-      </Card>
+      </div>
 
       {filtrados.length === 0 ? (
         <Card className="mt-6 border-dashed p-12 text-center text-muted-foreground">
@@ -167,7 +166,7 @@ function Filtro({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="bg-card">
+      <SelectTrigger className="bg-background">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
@@ -193,20 +192,15 @@ function Kpi({
   value: string;
   tone?: "success" | "warning";
 }) {
-  const cls = tone === "success" ? "text-success" : tone === "warning" ? "text-warning-foreground" : "text-primary";
+  const cls = tone === "success" ? "text-primary" : tone === "warning" ? "text-warning-foreground" : "text-foreground";
   return (
-    <Card className="card-elevated relative gap-0 overflow-hidden rounded-2xl border-border p-5">
-      <span
-        aria-hidden
-        className={`absolute inset-x-0 top-0 h-0.5 ${
-          tone === "success" ? "bg-success/60" : tone === "warning" ? "bg-warning/70" : "bg-primary/50"
-        }`}
-      />
+    <div className="ledger-cell">
       <p className="label-eyebrow flex items-center gap-2">
         <span className="text-muted-foreground">{icon}</span>
         {label}
       </p>
       <p className={`mt-2.5 font-display text-[1.75rem] leading-none tabular-nums ${cls}`}>{value}</p>
-    </Card>
+    </div>
   );
 }
+
