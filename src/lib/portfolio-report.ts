@@ -27,7 +27,7 @@ export interface FilaPredio {
   pct: number;
   cargados: number;
   totalDocs: number;
-  proximo?: { fecha: string; tipo: string; dias: number };
+  proximo?: { fecha: string; tipo: string; dias: number } | undefined;
 }
 
 export interface ReporteData {
