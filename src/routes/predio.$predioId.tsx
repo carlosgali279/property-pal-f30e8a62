@@ -39,8 +39,9 @@ export const Route = createFileRoute("/predio/$predioId")({
 
 function PredioDetalle() {
   const { predioId } = Route.useParams();
-  const { visiblePredios, documentos, movimientos, impuestos, tiposDocumento, contactoById, isAdmin, viewerLabel } =
+  const { visiblePredios, documentos, movimientos, impuestos, tiposPara, contactoById, isAdmin, viewerLabel, ventanaAlertas } =
     useStore();
+
   const predio = visiblePredios.find((p) => p.id === predioId);
 
   if (!predio) {
