@@ -35,24 +35,24 @@ export function PredioResumen({ predio }: { predio: Predio }) {
   return (
     <section className="space-y-5">
       {/* Estado general del predio */}
-      <div className="relative border border-border bg-surface p-5 pl-6">
-        <span aria-hidden className={`absolute inset-y-0 left-0 w-1.5 ${salud.stripe}`} />
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="label-eyebrow">Cómo vamos con este predio</p>
-            <p className="mt-1.5 font-display text-2xl leading-tight">
+      <div className="relative border border-border bg-surface px-4 py-2.5 pl-5">
+        <span aria-hidden className={`absolute inset-y-0 left-0 w-0.5 ${salud.stripe} opacity-60`} />
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <p className="text-sm text-muted-foreground">
+            <span className="text-foreground">
               {pct === 100 ? "Documentación completa" : `${comp.faltantes.length} documento(s) por cargar`}
-              {alertasPredio.length > 0
-                ? ` · ${alertasPredio.length} vencimiento(s) en los próximos 90 días`
-                : " · sin vencimientos próximos"}
-            </p>
-          </div>
+            </span>
+            {alertasPredio.length > 0
+              ? ` · ${alertasPredio.length} vencimiento(s) en los próximos 90 días`
+              : " · sin vencimientos próximos"}
+          </p>
           <span className={`stamp ${salud.stamp}`}>
             <span className="stamp-dot" aria-hidden />
             {salud.label}
           </span>
         </div>
       </div>
+
 
       {/* Cifras tipo libro contable */}
       <div className="ledger-grid grid-cols-2 lg:grid-cols-4">
