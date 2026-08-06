@@ -24,7 +24,7 @@ export function NuevoPredioDialog({ predio }: { predio?: Predio }) {
   const [nombre, setNombre] = useState(predio?.nombre ?? "");
   const [direccion, setDireccion] = useState(predio?.direccion ?? "");
   const [ciudad, setCiudad] = useState(predio?.ciudad ?? "");
-  const [razonSocial, setRazonSocial] = useState(predio?.razonSocial ?? razonesSociales[0]);
+  const [razonSocial, setRazonSocial] = useState<string>(predio?.razonSocial ?? razonesSociales[0]!);
   const [estado, setEstado] = useState<EstadoPredio>(predio?.estado ?? "disponible");
   const [seleccion, setSeleccion] = useState<string[]>(predio?.contactos.map((c) => c.contactoId) ?? []);
 
