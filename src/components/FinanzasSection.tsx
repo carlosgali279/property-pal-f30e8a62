@@ -4,7 +4,6 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, ResponsiveContainer, Toolti
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,

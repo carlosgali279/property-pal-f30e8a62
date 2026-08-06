@@ -10,7 +10,6 @@ import { TipoPredioBadge } from "@/components/TipoPredioBadge";
 import { NuevoPredioDialog } from "@/components/NuevoPredioDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportarExcel, exportarPDF } from "@/lib/reports";

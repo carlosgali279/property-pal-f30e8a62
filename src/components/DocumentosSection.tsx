@@ -3,7 +3,6 @@ import { CheckCircle2, CircleDashed, FileText, Plus, Trash2, Upload } from "luci
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,

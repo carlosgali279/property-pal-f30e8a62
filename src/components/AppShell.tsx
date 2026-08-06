@@ -3,7 +3,6 @@ import { Building2, Bell, LayoutGrid, ShieldCheck, Eye } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { alertas } from "@/lib/selectors";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
