@@ -55,7 +55,18 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     fetch: (input: RequestInfo | URL, init?: RequestInit) => {
       if (!init) return native.fetch(input as string);
       const safeInit: RequestInit = { ...init };
-      if (init.headers) safeInit.headers = new native.Headers(toPlainHeaders(init.headers));
+      if (init.headers) {
+        const plain = toPlainHeaders(init.headers);
+        // eslint-disable-next-line no-console
+        console.log("[debug supabase fetch] headers crudos:", init.headers, "-> plano:", plain);
+        try {
+          safeInit.headers = new native.Headers(plain);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error("[debug supabase fetch] Headers() falló con:", plain, err);
+          throw err;
+        }
+      }
       return native.fetch(input as string, safeInit);
     },
   },
