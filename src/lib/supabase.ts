@@ -11,26 +11,35 @@ const FALLBACK_ANON_KEY =
 const supabaseUrl = (import.meta.env["VITE_SUPABASE_URL"] as string) || FALLBACK_URL;
 const supabaseAnonKey = (import.meta.env["VITE_SUPABASE_ANON_KEY"] as string) || FALLBACK_ANON_KEY;
 
-// En producción, el framework (TanStack Start) parece interferir con la función global
-// `fetch` del navegador. Para evitarlo, tomamos una copia de `fetch` de un iframe oculto
-// que se mantiene vivo en segundo plano (si se destruye, su `fetch` deja de funcionar).
-function getNativeFetch(): typeof fetch {
-  if (typeof window === "undefined") return fetch;
+// En producción, el framework (TanStack Start) parece reemplazar `fetch` y/o `Headers`
+// globales del navegador por versiones propias, incompatibles con el `fetch` nativo.
+// Tomamos ambas directamente de un iframe oculto que se mantiene vivo en segundo plano
+// (nunca pasa por el código del framework).
+function getNativeGlobals() {
+  if (typeof window === "undefined") {
+    return { fetch, Headers };
+  }
   try {
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.setAttribute("aria-hidden", "true");
     document.body.appendChild(iframe);
-    return (iframe.contentWindow as unknown as { fetch: typeof fetch }).fetch.bind(iframe.contentWindow);
+    const win = iframe.contentWindow as unknown as { fetch: typeof fetch; Headers: typeof Headers };
+    return { fetch: win.fetch.bind(win), Headers: win.Headers };
   } catch {
-    return fetch;
+    return { fetch, Headers };
   }
 }
 
-const nativeFetch = getNativeFetch();
+const native = getNativeGlobals();
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
-    fetch: (...args: Parameters<typeof fetch>) => nativeFetch(...args),
+    fetch: (input: RequestInfo | URL, init?: RequestInit) => {
+      if (!init) return native.fetch(input as string);
+      const safeInit: RequestInit = { ...init };
+      if (init.headers) safeInit.headers = new native.Headers(init.headers as HeadersInit);
+      return native.fetch(input as string, safeInit);
+    },
   },
 });
