@@ -10,6 +10,7 @@ import {
   Gauge,
   FileText,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { alertas } from "@/lib/selectors";
@@ -19,7 +20,18 @@ import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { viewer, setViewer, contactos, isAdmin, documentos, visiblePredios, ventanaAlertas } = useStore();
+  const {
+    viewer,
+    setViewer,
+    contactos,
+    isAdmin,
+    isRealAdmin,
+    documentos,
+    visiblePredios,
+    ventanaAlertas,
+    viewerLabel,
+    signOut,
+  } = useStore();
   const [open, setOpen] = useState(false);
   const pendientes = alertas(documentos, visiblePredios, ventanaAlertas).length;
 
@@ -89,29 +101,47 @@ export function AppShell({ children }: { children: ReactNode }) {
                   ))}
                 </nav>
 
-                <div className="px-5 py-5">
-                  <p className="label-eyebrow">Ver como</p>
-                  <Select
-                    value={value}
-                    onValueChange={(v) =>
-                      setViewer(v === "admin" ? { kind: "admin" } : { kind: "propietario", contactoId: v.slice(5) })
-                    }
+                {isRealAdmin ? (
+                  <div className="px-5 py-5">
+                    <p className="label-eyebrow">Ver como</p>
+                    <Select
+                      value={value}
+                      onValueChange={(v) =>
+                        setViewer(v === "admin" ? { kind: "admin" } : { kind: "propietario", contactoId: v.slice(5) })
+                      }
+                    >
+                      <SelectTrigger className="mt-2 w-full bg-background">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin (yo)</SelectItem>
+                        {contactos.map((c) => (
+                          <SelectItem key={c.id} value={`prop:${c.id}`}>
+                            {c.nombre}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {isAdmin ? "Acceso total de administración." : "Vista previa de solo lectura de este propietario."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="px-5 py-5">
+                    <p className="text-xs text-muted-foreground">Conectado como {viewerLabel}</p>
+                  </div>
+                )}
+
+                <div className="border-t border-border px-5 py-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start gap-2 bg-background"
+                    onClick={() => signOut()}
                   >
-                    <SelectTrigger className="mt-2 w-full bg-background">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin (yo)</SelectItem>
-                      {contactos.map((c) => (
-                        <SelectItem key={c.id} value={`prop:${c.id}`}>
-                          {c.nombre}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    {isAdmin ? "Acceso total de administración." : "Vista de solo lectura de tus predios."}
-                  </p>
+                    <LogOut className="size-4" />
+                    Cerrar sesión
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>

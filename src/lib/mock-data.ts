@@ -108,6 +108,11 @@ export interface Predio {
   contactos: VinculoContacto[];
   /** Solo aplica a predios comerciales (arrendados). */
   arrendatario?: Arrendatario;
+  /** Campos operativos reales (no parte del modelo original de datos de ejemplo). */
+  codigoLote?: string;
+  ubicacion?: string;
+  notas?: string;
+  driveFolderId?: string;
 }
 
 export const TIPOS_DOCUMENTO_INICIALES = [

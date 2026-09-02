@@ -216,9 +216,9 @@ function RolesPanel() {
           />
           <Button
             className="gap-2"
-            onClick={() => {
+            onClick={async () => {
               if (!nuevo.nombre.trim()) { toast.error("Escribe un nombre."); return; }
-              const id = addContacto({
+              const id = await addContacto({
                 nombre: nuevo.nombre.trim(),
                 email: nuevo.email.trim(),
                 telefono: nuevo.telefono.trim(),
