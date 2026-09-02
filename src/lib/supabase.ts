@@ -33,12 +33,29 @@ function getNativeGlobals() {
 
 const native = getNativeGlobals();
 
+function toPlainHeaders(h: HeadersInit): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (Array.isArray(h)) {
+    for (const [k, v] of h) out[k] = v;
+  } else if (h && typeof (h as { forEach?: unknown }).forEach === "function") {
+    (h as Headers).forEach((value, key) => {
+      out[key] = value;
+    });
+  } else if (h && typeof h === "object") {
+    for (const k of Object.keys(h)) {
+      const v = (h as Record<string, string>)[k];
+      if (v !== undefined) out[k] = v;
+    }
+  }
+  return out;
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     fetch: (input: RequestInfo | URL, init?: RequestInit) => {
       if (!init) return native.fetch(input as string);
       const safeInit: RequestInit = { ...init };
-      if (init.headers) safeInit.headers = new native.Headers(init.headers as HeadersInit);
+      if (init.headers) safeInit.headers = new native.Headers(toPlainHeaders(init.headers));
       return native.fetch(input as string, safeInit);
     },
   },
