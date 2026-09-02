@@ -11,4 +11,8 @@ const FALLBACK_ANON_KEY =
 const supabaseUrl = (import.meta.env["VITE_SUPABASE_URL"] as string) || FALLBACK_URL;
 const supabaseAnonKey = (import.meta.env["VITE_SUPABASE_ANON_KEY"] as string) || FALLBACK_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    fetch: (...args: Parameters<typeof fetch>) => fetch(...args),
+  },
+});
